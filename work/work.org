@@ -1,6 +1,75 @@
 #+title: Short Term TODO's and babel scratch pad
 #+author: eric gustafson
 
+* TODO manage hostapd
+
+  A Unix shell like fork/exec and then watch the pid from here should
+  be pretty trivial.
+
+#+BEGIN_SRC sh :results output raw
+  sudo /usr/sbin/hostapd -d /etc/hostapd/hostapd.conf  2>&1
+:
+#+END_SRC
+
+#+RESULTS:
+random: Trying to read entropy from /dev/random
+Configuration file: /etc/hostapd/hostapd.conf
+Could not read interface ap0 flags: No such device
+nl80211: Driver does not support authentication/association or connect commands
+nl80211: deinit ifname=ap0 disabled_11b_rates=0
+nl80211: Remove monitor interface: refcount=0
+netlink: Operstate: ifindex=0 linkmode=0 (kernel-control), operstate=6 (IF_OPER_UP)
+Could not read interface ap0 flags: No such device
+nl80211: Set mode ifindex 0 iftype 2 (STATION)
+nl80211: Failed to set interface 0 to mode 2: -19 (No such device)
+nl80211 driver initialization failed.
+hostapd_interface_deinit_free(0xf608f0)
+hostapd_interface_deinit_free: num_bss=1 conf->num_bss=1
+hostapd_interface_deinit(0xf608f0)
+ap0: interface state UNINITIALIZED->DISABLED
+hostapd_bss_deinit: deinit bss ap0
+ap0: AP-DISABLED 
+hostapd_cleanup(hapd=0xf628a8 (ap0))
+hostapd_free_hapd_data: Interface ap0 wasn't started
+hostapd_interface_deinit_free: driver=(nil) drv_priv=(nil) -> hapd_deinit
+hostapd_interface_free(0xf608f0)
+hostapd_interface_free: free hapd 0xf628a8
+hostapd_cleanup_iface(0xf608f0)
+hostapd_cleanup_iface_partial(0xf608f0)
+hostapd_cleanup_iface: free iface=0xf608f0
+
+
+#+BEGIN_SRC sh :results output raw
+   cat /etc/hostapd/hostapd.conf
+#+END_SRC
+
+#+RESULTS:
+### Wireless network name ###
+
+interface=ap0
+driver=nl80211
+country_code=US
+ssid=g3
+hw_mode=g
+channel=1
+wpa=2
+wpa_passphrase=bustergus25
+## Key management algorithms ##
+wpa_key_mgmt=WPA-PSK
+
+## Set cipher suites (encryption algorithms) ##
+## TKIP = Temporal Key Integrity Protocol
+## CCMP = AES in Counter mode with CBC-MAC
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+## Shared Key Authentication ##
+auth_algs=1
+
+## Accept all MAC address ###
+macaddr_acl=0
+
+
 
 * TODO network/interfaces file
   Generate this file taking a list of interface CLOS objects

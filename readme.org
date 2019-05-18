@@ -1,0 +1,31 @@
+#+title: System Admin Tools
+#+author: eric gustafson
+
+* Goal
+Using common lisp to perform system administration tasks focusing on
+Wifi and network administration routines
+
+
+* Key Files
+
+** Org files
+#+name: orgfiles
+#+BEGIN_SRC sh :results output value table :exports results
+   find . -name '[^.]*.org' -print | perl -pi -e 's/(^.*$)/\[file:$1\]/g' | sort
+#+END_SRC
+
+#+RESULTS: orgfiles
+| [file:./readme.org]    |
+| [file:./work/plan.org] |
+| [file:./work/work.org] |
+
+
+** Lisp source files
+#+BEGIN_SRC sh :results output value table :exports results
+  ls *.lisp | perl -pi -e 's/(^.*$)/\[file:$1\]/g' | sort
+#+END_SRC
+
+#+RESULTS:
+| [file:lisp-linux-sa-utils.lisp] |
+| [file:package.lisp]             |
+

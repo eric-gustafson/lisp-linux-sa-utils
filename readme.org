@@ -11,18 +11,18 @@ Wifi and network administration routines
 ** Org files
 #+name: orgfiles
 #+BEGIN_SRC sh :results output value table :exports results
-   find . -name '[^.]*.org' -print | perl -pi -e 's/(^.*$)/\[file:$1\]/g' | sort
+   find . -name '[^.]*.org' -print | perl -pi -e 's/(^.*$)/\[\[file:$1\]\]/g' | sort
 #+END_SRC
 
 #+RESULTS: orgfiles
-| [file:./readme.org]    |
-| [file:./work/plan.org] |
-| [file:./work/work.org] |
+| [[file:./readme.org]]    |
+| [[file:./work/plan.org]] |
+| [[file:./work/work.org]] |
 
 
 ** Lisp source files
 #+BEGIN_SRC sh :results output value table :exports results
-  ls *.lisp | perl -pi -e 's/(^.*$)/\[file:$1\]/g' | sort
+  ls *.lisp | perl -pi -e 's/(^.*$)/\[\[file:$1\]\]/g' | sort
 #+END_SRC
 
 #+RESULTS:

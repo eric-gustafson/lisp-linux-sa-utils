@@ -1,0 +1,9 @@
+#+title: Lisp System Admin Plan
+#+authore: Eric Gustafson
+
+
+* Milestones
+** Use to setup wifi interfaces on RBPI prototype #1
+
+
+

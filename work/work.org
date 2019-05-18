@@ -1,0 +1,79 @@
+#+title: Short Term TODO's and babel scratch pad
+#+author: eric gustafson
+
+
+* TODO network/interfaces file
+  Generate this file taking a list of interface CLOS objects
+
+#+BEGIN_SRC lisp :results output
+   (princ (network/interfaces))
+#+END_SRC
+
+
+
+* TODO write a script that burns the RBP image, and puts these file in the images
+  cpio them right onto the image?  Or something simpler?
+
+* TODO snot has interfaces, local-net, ...
+  wifi will have these as well.  Maybe a new library?  Anyhow, organize, organize
+
+
+* TODO kick off a nmap if we see a local address
+
+** TODO predicate if it's a new address
+** TODO predicate if we need a refresh
+
+** simultaneous AP and managed mode
+*** udev rule
+#+BEGIN_SRC 
+SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="b8:27:eb:ff:ff:ff", KERNEL=="phy0", \
+  RUN+="/sbin/iw phy phy0 interface add ap0 type __ap", \
+  RUN+="/bin/ip link set ap0 address b8:27:eb:ff:ff:ff"
+#+END_SRC
+
+#+BEGIN_SRC lisp :results value
+  (let ((lines 
+         (with-open-file (*standard-input* #P"/proc/net/dev")
+           (loop :for l = (read-line nil nil) :while l :collect (ppcre:split "\\s" l))
+           )))
+    (loop :for l in lines :do (format t "~a~%" l) )
+    lines)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+(Inter-|   Receive                                                |  Transmit)
+( face |bytes    packets errs drop fifo frame compressed multicast|bytes
+ packets errs drop fifo colls carrier compressed)
+(wlx9cefd5fdd60e:       0       0    0    0    0     0          0         0
+    0       0    0    0    0     0       0          0)
+(    lo:  211828     114    0    0    0     0          0         0   211828
+ 114    0    0    0     0       0          0)
+(enxb827eb659c11:       0       0    0    0    0     0          0         0
+    0       0    0    0    0     0       0          0)
+( wlan0: 4389488   40233    0    0    0     0          0     17994   600104
+ 3070    0    0    0     0       0          0)
+#+end_example
+
+
+
+
+#+BEGIN_SRC sh :results output
+  ifconfig
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC sh :results raw
+  ip link
+#+END_SRC
+
+
+#+BEGIN_SRC lisp  :results table
+  (ip-link)
+#+END_SRC
+
+** TODO get wireless information
+
+

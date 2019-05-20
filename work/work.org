@@ -71,6 +71,22 @@ macaddr_acl=0
 
 
 
+
+* TODO algo1
+  get list of network interfaces or seed it.
+  
+  filter out wired ones
+
+  find the target interface
+
+  generate hostapd and fork/exec
+
+  setup interace
+  
+
+* TODO udev info
+  [[https://opensource.com/article/18/11/udev]]  
+
 * TODO network/interfaces file
   Generate this file taking a list of interface CLOS objects
 

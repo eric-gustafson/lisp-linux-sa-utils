@@ -26,6 +26,6 @@ Wifi and network administration routines
 #+END_SRC
 
 #+RESULTS:
-| [file:lisp-linux-sa-utils.lisp] |
-| [file:package.lisp]             |
+| [[file:lisp-linux-sa-utils.lisp]] |
+| [[file:package.lisp]]             |
 

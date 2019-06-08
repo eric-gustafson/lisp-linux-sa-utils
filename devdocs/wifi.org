@@ -1,4 +1,11 @@
 
+#+BEGIN_SRC lisp :results value
+  (lsa:ip-link)
+#+END_SRC
+
+#+RESULTS:
+| lo   | <LOOPBACK,UP,LOWER_UP>            | mtu | 65536 | qdisc | noqueue | state | UNKNOWN | mode | DEFAULT | group | default | qlen | 1000 |
+| wlo1 | <BROADCAST,MULTICAST,UP,LOWER_UP> | mtu |  1500 | qdisc | mq      | state | UP      | mode | DORMANT | group | default | qlen | 1000 |
 
 #+BEGIN_SRC sh :results output 
    ip addr
@@ -40,3 +47,7 @@
 
 #+RESULTS:
 
+* Use cases
+** Get all of the current networks and IP addresses
+   Get the IP addresses and networks that this host is connected to
+   

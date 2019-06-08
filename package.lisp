@@ -1,4 +1,10 @@
 ;;;; package.lisp
 
-(defpackage #:lisp-linux-sa-utils
-  (:use #:cl))
+(defpackage #:lsa
+  (:use #:cl)
+  (:export
+   :ip-link
+   :iwconfig-interface-list
+   :ip-addr
+   )
+  )

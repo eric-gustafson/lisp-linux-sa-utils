@@ -11,5 +11,6 @@
    :name :mtu :qdisk :state :mode :group :mac :ltype :broadcast
    :ip-addr-objs
    :ip-link-objs
+   :addr
    )
   )

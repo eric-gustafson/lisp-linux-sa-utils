@@ -2,22 +2,164 @@
 
 (in-package #:lsa)
 
-(defun ip-link ()
-  (let ((txt (inferior-shell:run/lines "/sbin/ip link"))
-	)
-    (loop :for results in
-       (loop
-	  :for i from 1
-	  :for l in txt
-	  :when (oddp i) :collect (cdr (ppcre:split "\\s" l)))
-       :collect
-       (trivia:match
-	   results
-	 ((cons first rest)
-	  (cons (ppcre:regex-replace ":$" first "") rest))))
+(defclass link ()
+  (
+   (name :accessor name :initarg :name :initform "")
+   (mtu  :accessor mtu :initarg :mtu :initform "")
+   (qdisk :accessor qdisk :initarg :qdisk :initform "")
+   (state :accessor state :initarg :state :initform  "")
+   (mode :accessor mode :initarg :mode :initform "")
+   (group :accessor group :initarg :group :initform "")
+   (mac :accessor mac :initarg :mac :initform "")
+   (ltype :accessor ltype :initarg :ltype :initform "")
+   (broadcast :accessor broadcast :initarg :broadcast :initform "")
+   ;; (:accessor :initarg :initform)
+   )
+  )
+
+(defclass ip-addr (link)
+  (
+   (addr :accessor addr :initarg :addr :initform nil)
+   )
+  )
+
+(defparameter *extractor-methods* '())
+
+(defclass host ()
+  (
+   (iflst :accessor iflst :initarg :iflst :initform '())
+   )
+  )
+
+(defmacro def-if-pattern-extractor ((objvar) &body body)
+  (let ((lstvar (gensym)))
+    `(push #(lambda(,objvar ,lstvar)
+	     (trivia:match
+		 ,lstvar
+	       ,@body
+	       ))
+	   *extractor-methods*)
+    ))
+
+(def-if-pattern-extractor (obj)
+    ((list _ ifstr _ "mtu")
+     (setf (name obj) ifstr))
+  )
+
+(defmethod fill-object ((obj link) lst)
+  (loop :for e :on lst :do
+     (loop :for emethod in *extractor-methods* :do
+	(funcall emothd obj e))
+     )
+  )
+
+(defmethod print-object ((obj link) stream)
+  (print-unreadable-object
+      (obj stream :type t)
+    (with-slots
+	  (name mtu qdisk state mode group mac ltype broadcast)
+	obj
+      (format stream "~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a"
+	      name mtu qdisk state mode group
+	      mac ltype broadcast
+	      ))
     )
   )
 
+
+(defmethod print-object ((obj ip-addr) stream)
+  (print-unreadable-object
+      (obj stream :type t)
+    (with-slots
+	  (name mtu qdisk state mode group mac ltype broadcast addr)
+	obj
+      (format stream "~a,~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a"
+	      name addr mtu qdisk state mode group
+	      mac ltype broadcast
+	      ))
+    )
+  )
+
+(defun common-splitter (txt)
+  "splits up sections of code from ip, such as 'ip addr' and 'ip link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
+  (trivia:match
+      (ppcre:split *if-scanner-splitter*  txt)
+    ((list* "" rest)
+     (mapcar #'(lambda(str)
+		 (let ((stuff (ppcre:split "\\s+" str)))
+		   (trivia:match
+		       stuff
+		     ((list* "" if rest)
+		      (trivia:match
+			  if
+			((trivia.ppcre:ppcre "(.+):" x)
+			 (cons x rest))
+			(otherwise
+			 (cons if rest))))
+		     (otherwise
+		      stuff))))
+	     rest)
+     )
+    )
+  )
+  
+(defun ip-link ()
+  (common-splitter (inferior-shell:run/s "/sbin/ip link"))
+  )
+
+(defun ip-addr ()
+  (common-splitter (inferior-shell:run/s "/sbin/ip addr")))
+
+(defun ip-addr-objs ()
+  (serapeum:filter-map
+   (trivia:lambda-match
+     ((list*
+       if _
+       "mtu" _
+       "qdisc" _
+       "state" _
+       "group" _
+       "qlen" _
+       type mac
+       "brd" _
+       "inet" ip/cidr
+       rest)
+      (make-instance 'ip-addr
+		     :name if
+		     :addr ip/cidr)))
+   (ip-addr)))
+
+(defun ip-link-objs ()
+  (serapeum:filter-map
+   #'(lambda(obj)
+	      (trivia:cmatch
+		  obj
+		((list* name thing 
+			"mtu" mtu
+			"qdisc" qd
+			"state" state
+			"mode" mode
+		        "group" group
+			"qlen" qlen
+			type
+			mac
+			"brd"
+			brd			
+			rest)
+		 (make-instance 'link
+				:name name
+				:mtu (parse-integer mtu)
+				:qdisk qd
+				:state state
+				:mode mode
+				:group group
+				:mac mac
+				:ltype type
+				:broadcast brd
+				))))
+	  (ip-link)))
+	    
+(defparameter *if-scanner-splitter* (ppcre:create-scanner "^\\d+:" :multi-line-mode t))
 (defparameter *if-scanner* (ppcre:create-scanner "^\\d+:\\s+([^:]+):" :multi-line-mode t))
 (defparameter *ip-addr-scanner* (ppcre:create-scanner ".*inet\\s+(\\d+\\.\\d+\\.\\d+\\.\\d+)/(\\d+)" :multi-line-mode t))
 (defparameter *mac-addr-scanner* (ppcre:create-scanner ".*link/\\w+\\s+(\\S+)" :multi-line-mode t))
@@ -68,7 +210,7 @@
       (trivia:match
 	  (multiple-value-list (extract-if txt :start offset))
 	((list ifstr off)
-	 (format t "~a,~a~%" ifstr off)
+	 ;;(format t "~a,~a~%" ifstr off)
 	 (unless off (trivia.fail:fail))
 	 (capture ifstr off)
 	 ;; Add more stuff if we can find it.
@@ -95,22 +237,6 @@
     )
   )
   
-(defun ip-addr ()
-  "return an associate list of (interface  ip)"
-  (let* ((txt (inferior-shell:run/s "/sbin/ip addr"))
-	 (q (serapeum:queue))
-	 (offset 0))
-    (labels ((adder (obj)
-	       (serapeum:enq obj q)))
-      (loop :do
-	 (progn
-	   (format t "wtf:~a~%" offset)
-	   (setf offset (extract-ip-record #'adder txt :offset offset))
-	   (format t "~a~%" offset)
-	   (unless offset (loop-finish)))))
-    (serapeum:qlist q)
-    ))
-
 (defun iwconfig-interface-list ()
   (let ((results '()))
     (loop :for line :in (inferior-shell:run/lines "iwconfig")
@@ -123,4 +249,43 @@
 
   
        
-	  
+(stringhere:enable-txt-syntax)	  
+
+
+(defun hostapd (iface)
+  (declare (type (string iface)))
+  (let ((output
+	 (with-output-to-string (*standard-output*)
+#{	   
+### FILE: hostapd.conf
+### Wireless network name ###                                                                                                                          
+
+interface=,(princ iface)
+driver=nl80211
+country_code=US
+ssid=g3
+hw_mode=g
+channel=1
+wpa=2
+wpa_passphrase=bustergus25
+## Key management algorithms ##                                                                                                                        
+wpa_key_mgmt=WPA-PSK
+
+## Set cipher suites (encryption algorithms) ##                                                                                                        
+## TKIP = Temporal Key Integrity Protocol                                                                                                              
+## CCMP = AES in Counter mode with CBC-MAC                                                                                                             
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+## Shared Key Authentication ##                                                                                                                        
+auth_algs=1
+
+## Accept all MAC address ###                                                                                                                          
+macaddr_acl=0
+}
+)))
+    output)
+  )
+
+
+(stringhere:disable-txt-syntax)

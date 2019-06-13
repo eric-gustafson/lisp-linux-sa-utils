@@ -9,7 +9,9 @@
   :depends-on (
 	       #:uiop
 	       #:trivia
+	       #:trivia.ppcre
 	       #:inferior-shell
+	       #:stringhere
 	       )
   :components ((:file "package")
                (:file "lisp-linux-sa-utils"))

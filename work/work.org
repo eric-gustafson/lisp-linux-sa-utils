@@ -1,6 +1,11 @@
 #+title: Short Term TODO's and babel scratch pad
 #+author: eric gustafson
 
+* TODO interfaces function call for local interaces
+
+* TODO we also want to do this on a remote router
+
+
 * TODO manage hostapd
 
   A Unix shell like fork/exec and then watch the pid from here should

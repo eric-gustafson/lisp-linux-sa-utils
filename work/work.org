@@ -1,5 +1,6 @@
 #+title: Short Term TODO's and babel scratch pad
 #+author: eric gustafson
+#+startup: overview
 
 * TODO interfaces function call for local interaces
 
@@ -12,11 +13,12 @@
   be pretty trivial.
 
 #+BEGIN_SRC sh :results output raw
-  sudo /usr/sbin/hostapd -d /etc/hostapd/hostapd.conf  2>&1
+  sudo /usr/sbin/hostapd -d /tmp/hostapd.conf  2>&1
 :
 #+END_SRC
 
 #+RESULTS:
+sudo: no tty present and no askpass program specified
 random: Trying to read entropy from /dev/random
 Configuration file: /etc/hostapd/hostapd.conf
 Could not read interface ap0 flags: No such device

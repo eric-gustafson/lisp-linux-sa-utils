@@ -249,10 +249,11 @@
 
   
        
-(stringhere:enable-txt-syntax)	  
+(progn
+  (stringhere:enable-txt-syntax)	  
 
-
-(defun hostapd (iface)
+ 
+(defun hostapd (iface ssid passphrase)
   (declare (type (string iface)))
   (let ((output
 	 (with-output-to-string (*standard-output*)
@@ -263,11 +264,11 @@
 interface=,(princ iface)
 driver=nl80211
 country_code=US
-ssid=g3
+ssid=,(princ ssid)
 hw_mode=g
 channel=1
 wpa=2
-wpa_passphrase=bustergus25
+wpa_passphrase=,(princ passphrase)
 ## Key management algorithms ##                                                                                                                        
 wpa_key_mgmt=WPA-PSK
 
@@ -289,3 +290,4 @@ macaddr_acl=0
 
 
 (stringhere:disable-txt-syntax)
+)

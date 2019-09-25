@@ -248,16 +248,13 @@
     results))
 
   
-       
-(progn
-  (stringhere:enable-txt-syntax)	  
-
+(stringhere:enable-txt-syntax)	  
  
 (defun hostapd (iface ssid passphrase)
   (declare (type (string iface)))
   (let ((output
 	 (with-output-to-string (*standard-output*)
-#{	   
+#{
 ### FILE: hostapd.conf
 ### Wireless network name ###                                                                                                                          
 
@@ -290,4 +287,3 @@ macaddr_acl=0
 
 
 (stringhere:disable-txt-syntax)
-)

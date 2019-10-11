@@ -131,33 +131,33 @@
 
 (defun ip-link-objs ()
   (serapeum:filter-map
-   #'(lambda(obj)
-	      (trivia:cmatch
-		  obj
-		((list* name thing 
-			"mtu" mtu
-			"qdisc" qd
-			"state" state
-			"mode" mode
-		        "group" group
-			"qlen" qlen
-			type
-			mac
-			"brd"
-			brd			
-			rest)
-		 (make-instance 'link
-				:name name
-				:mtu (parse-integer mtu)
-				:qdisk qd
-				:state state
-				:mode mode
-				:group group
-				:mac mac
-				:ltype type
-				:broadcast brd
-				))))
-	  (ip-link)))
+   (trivia:lambda-match
+     ((list* name _
+	     "mtu" mtu
+	     "qdisc" qd
+	     "state" state
+	     "mode" mode
+	     "group" group
+	     "qlen" _
+	     type
+	     mac
+	     "brd"
+	     brd			
+	     rest)
+      (make-instance 'link
+		     :name name
+		     :mtu (parse-integer mtu)
+		     :qdisk qd
+		     :state state
+		     :mode mode
+		     :group group
+		     :mac mac
+		     :ltype type
+		     :broadcast brd
+		     )))
+   (ip-link)
+   ))
+
 	    
 (defparameter *if-scanner-splitter* (ppcre:create-scanner "^\\d+:" :multi-line-mode t))
 (defparameter *if-scanner* (ppcre:create-scanner "^\\d+:\\s+([^:]+):" :multi-line-mode t))

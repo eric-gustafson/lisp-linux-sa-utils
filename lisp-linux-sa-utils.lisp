@@ -132,6 +132,9 @@
 (defun ip-link-objs ()
   (serapeum:filter-map
    (trivia:lambda-match
+     ("eth0" "<BROADCAST,MULTICAST,UP,LOWER_UP8000>"
+	     "mtu" "1500"
+	     "qdisc" "mq" "qlen" "1000" "link/ether" "fc:69:47:47:5f:75" "brd" "ff:ff:ff:ff:ff:ff")
      ((list* name _
 	     "mtu" mtu
 	     "qdisc" qd
@@ -143,7 +146,7 @@
 	     mac
 	     "brd"
 	     brd			
-	     rest)
+	     )
       (make-instance 'link
 		     :name name
 		     :mtu (parse-integer mtu)

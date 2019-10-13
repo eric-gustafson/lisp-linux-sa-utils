@@ -130,23 +130,23 @@
    (ip-addr)))
 
 (defun ip-link-objs ()
-  (let* (name
-	 mtu qd type mac brd
-	 state mode group
-	 (lst (ip-link))
-	 (iq  (serapeum:queue `(link :name ,(car lst)))) ;;instance-queue
-	 )
-    (loop :for f :on lst :do
-       (match
-	   f
-	 ((list* "mtu" mtu rest)  (serapeum:qappend iq `(:mtu ,(parse-integer mtu))))
-	 ((list* "qdisc" qd rest) (serapeum:qappend iq `(:qdisk ,qd)))
-	 ((list* "state" state) (serapeum:qappend iq `(:state ,state)))
-	 ((list* "mode" mode) (serapeum:qappend iq `(:mode ,mode)))
-	 ((list* "group" group) (serapeum:qappend iq `(:group ,group)))
-	 ((list type mac "brd" brd) (serapeum:qappend iq `(:ltype ,type :broadcast ,brd :mac ,mac))))
-       )
-    (apply #'make-instance (serapeum:qlist iq))
+  (let ((links (ip-link)))
+    (loop :for link in links :collect
+       (let (
+	     (iq  (serapeum:queue 'link :name (car link)))
+	     ) ;;instance-queue	 
+	 (loop :for f :on link :do
+	  (trivia:match
+	      f
+	    ((list* "mtu" mtu _)  (serapeum:qappend iq `(:mtu ,(parse-integer mtu))))
+	    ((list* "qdisc" qd _) (serapeum:qappend iq `(:qdisk ,qd)))
+	    ((list* "state" state _) (serapeum:qappend iq `(:state ,state)))
+	    ((list* "mode" mode _) (serapeum:qappend iq `(:mode ,mode)))
+	    ((list* "group" group _) (serapeum:qappend iq `(:group ,group)))
+	    ((list type mac "brd" brd) (serapeum:qappend iq `(:ltype ,type :broadcast ,brd :mac ,mac))))
+	    )
+	 (apply #'make-instance (serapeum:qlist iq))
+	 ))
     )
   )
 	    

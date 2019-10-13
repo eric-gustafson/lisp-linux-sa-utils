@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
 (defpackage #:lsa
-  (:use #:cl)
+  (:use #:cl #:serapeum)
   (:export
    :ip-link
    :iwconfig-interface-list

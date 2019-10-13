@@ -130,37 +130,25 @@
    (ip-addr)))
 
 (defun ip-link-objs ()
-  (serapeum:filter-map
-   (trivia:lambda-match
-     ("eth0" "<BROADCAST,MULTICAST,UP,LOWER_UP8000>"
-	     "mtu" "1500"
-	     "qdisc" "mq" "qlen" "1000" "link/ether" "fc:69:47:47:5f:75" "brd" "ff:ff:ff:ff:ff:ff")
-     ((list* name _
-	     "mtu" mtu
-	     "qdisc" qd
-	     "state" state
-	     "mode" mode
-	     "group" group
-	     "qlen" _
-	     type
-	     mac
-	     "brd"
-	     brd			
-	     )
-      (make-instance 'link
-		     :name name
-		     :mtu (parse-integer mtu)
-		     :qdisk qd
-		     :state state
-		     :mode mode
-		     :group group
-		     :mac mac
-		     :ltype type
-		     :broadcast brd
-		     )))
-   (ip-link)
-   ))
-
+  (let* (name
+	 mtu qd type mac brd
+	 state mode group
+	 (lst (ip-links))
+	 iq  (queue 'link :name (car lst)) ;;instance-queue
+	 )
+    (loop :for f :on lst :do
+       (match
+	   f
+	 ((list* "mtu" mtu rest)  (qappend iq `(:mtu ,(parse-integer mtu))))
+	 ((list* "qdisc" qd rest) (qappend iq `(:qdisk ,qd)))
+	 ((list* "state" state) (qappend iq `(:state ,state)))
+	 ((list* "mode" mode) (qappend iq `(:mode ,mode)))
+	 ((list* "group" group) (qappend iq `(:group ,group)))
+	 ((list type mac "brd" brd) (qappend iq `(:ltype ,type :broadcast ,brd :mac ,mac))))
+       )
+    (apply #'make-instance iq)
+    )
+  )
 	    
 (defparameter *if-scanner-splitter* (ppcre:create-scanner "^\\d+:" :multi-line-mode t))
 (defparameter *if-scanner* (ppcre:create-scanner "^\\d+:\\s+([^:]+):" :multi-line-mode t))

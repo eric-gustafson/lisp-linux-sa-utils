@@ -13,6 +13,7 @@
 	       #:trivia.ppcre
 	       #:inferior-shell
 	       #:stringhere
+	       #:numex
 	       )
   :components ((:file "package")
                (:file "lisp-linux-sa-utils"))

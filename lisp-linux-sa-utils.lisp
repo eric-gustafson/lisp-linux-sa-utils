@@ -102,7 +102,31 @@
      )
     )
   )
-  
+
+(defun add-vnet (ip cidr-block)
+  (unless (and ip cidr-block)
+    (error "add-vnet - must supply ip and cidr-block"))
+  (handler-case
+      (inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev wlan0" (numex:->dotted ip) cidr-block
+				    ))
+			    
+    (t (c)
+      (format t "We caught a condition.~&")
+      (values nil c))
+    )
+  )
+
+(defun del-vnet (ip cidr-block)
+  (handler-case
+      (progn
+	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a dev wlan0" (numex:->dotted ip) cidr-block))
+	)
+    (t (c)
+      (format t "We caught a condition.~&")
+      (values nil c))
+    )
+  )
+
 (defun ip-link ()
   (common-splitter (inferior-shell:run/s "/sbin/ip link"))
   )
@@ -117,7 +141,7 @@
        if _
        "mtu" _
        "qdisc" _
-       "state" _
+       "state" state
        "group" _
        "qlen" _
        type mac
@@ -126,6 +150,9 @@
        rest)
       (make-instance 'ip-addr
 		     :name if
+		     :state state
+		     :ltype type
+		     :mac mac
 		     :addr ip/cidr)))
    (ip-addr)))
 

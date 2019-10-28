@@ -12,5 +12,8 @@
    :ip-addr-objs
    :ip-link-objs
    :addr
+
+   :add-vnet
+   :del-vnet
    )
   )

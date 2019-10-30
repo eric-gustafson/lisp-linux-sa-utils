@@ -125,6 +125,7 @@
 	   :until (eq xit-code 0)
 	   :do (print i))
 	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vland-id*))
+	*vlan-id*
 	)
     (t (c)
       (format t "We caught a condition.~&")

@@ -15,5 +15,8 @@
 
    :add-vnet
    :del-vnet
+   :up-vnet
+   :add-addr
+   :del-addr
    )
   )

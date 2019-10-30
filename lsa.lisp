@@ -103,20 +103,44 @@
     )
   )
 
+(defvar *vlan-id* 0)
+
+(defclass vlan ()
+  (
+   (id :accessor id :initarg :id)
+   (dev :access dev :initarg dev)
+   )
+  )
+
 (defun add-vnet (ip cidr-block)
   (unless (and ip cidr-block)
     (error "add-vnet - must supply ip and cidr-block"))
   (handler-case
-      (inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev wlan0" (numex:->dotted ip) cidr-block
-				    ))
-			    
+      (progn
+	(incf *vlan-id*)
+	(inferior-shell:run/s (format nil "/sbin/ip link add link wlan0 name wlan0.~a type vlan id ~a" *vlan-id*  *vlan-id*))
+	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a brd + dev wlan0.~a" (numex:->dotted ip) cidr-block *vland-id*))
+	(inferior-shell:run/s (format nil "/sbin/ip link set dev wlan.~a up" *vland-id*))
+	)
     (t (c)
       (format t "We caught a condition.~&")
       (values nil c))
     )
   )
 
-(defun del-vnet (ip cidr-block)
+(defun del-vnet (id)
+  (handler-case
+      (progn
+	(inferior-shell:run/s (format nil "/sbin/ip set dev wlan0.~a down" id))
+	(inferior-shell:run/s (format nil "/sbin/ip link delete wlan0.~a" id))
+	)
+    (t (c)
+      (format t "We caught a condition.~&")
+      (values nil c))
+    )
+  )
+
+(defun del-addr (ip cidr-block)
   (handler-case
       (progn
 	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a dev wlan0" (numex:->dotted ip) cidr-block))
@@ -126,7 +150,7 @@
       (values nil c))
     )
   )
-
+  
 (defun ip-link ()
   (common-splitter (inferior-shell:run/s "/sbin/ip link"))
   )

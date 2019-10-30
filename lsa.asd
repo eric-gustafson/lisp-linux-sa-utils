@@ -16,5 +16,5 @@
 	       #:numex
 	       )
   :components ((:file "package")
-               (:file "lisp-linux-sa-utils"))
+               (:file "lsa"))
   )

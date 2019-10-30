@@ -108,7 +108,7 @@
 (defclass vlan ()
   (
    (id :accessor id :initarg :id)
-   (dev :access dev :initarg dev)
+   (dev :accessor dev :initarg dev)
    )
   )
 

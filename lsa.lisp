@@ -155,10 +155,10 @@
     )
   )
 
-(defun del-addr (ip cidr-block)
+(defun del-addr (pif ip cidr-block)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a dev wlan0" (numex:->dotted ip) cidr-block))
+	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a dev ~a" (numex:->dotted ip) cidr-block) pif)
 	)
     (t (c)
       (format t "We caught a condition.~&")
@@ -166,10 +166,10 @@
     )
   )
 
-(defun add-addr (ip cidr-block)
+(defun add-addr (pif ip cidr-block)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev wlan0" (numex:->dotted ip) cidr-block))
+	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev ~a" (numex:->dotted ip) cidr-block pif))
 	)
     (t (c)
       (format t "We caught a condition.~&")

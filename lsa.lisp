@@ -165,6 +165,17 @@
       (values nil c))
     )
   )
+
+(defun add-addr (ip cidr-block)
+  (handler-case
+      (progn
+	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev wlan0" (numex:->dotted ip) cidr-block))
+	)
+    (t (c)
+      (format t "We caught a condition.~&")
+      (values nil c))
+    )
+  )
   
 (defun ip-link ()
   (common-splitter (inferior-shell:run/s "/sbin/ip link"))

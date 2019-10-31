@@ -118,17 +118,17 @@
   (handler-case
       (progn
 	(incf *vlan-id*)
-	(inferior-shell:run/s (format nil "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*))
+	(inferior-shell:run (format nil "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*) :on-error nil)
 	(loop 
 	   :for i from 1 upto 10 
 	   :for (str _ xit-code) = (multiple-value-list (inferior-shell:run (format nil "/sbin/ip link show ~a.~a" pif *vlan-id*)  :on-error nil))
 	   :until (eq xit-code 0)
 	   :do (print i))
-	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*))
+	(inferior-shell:run (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*) :on-error nil)
 	*vlan-id*
 	)
     (t (c)
-      (format t "We caught a condition.~&")
+      (format t "We caught a condition.~a~&" c)
       (values nil c))
     )
   )

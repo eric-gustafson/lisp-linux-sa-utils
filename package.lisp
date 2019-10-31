@@ -13,10 +13,11 @@
    :ip-link-objs
    :addr
 
-   :add-vnet
-   :del-vnet
-   :up-vnet
+   :add-vlan
+   :del-vlan
+   :up-vlan
    :add-addr
    :del-addr
+   
    )
   )

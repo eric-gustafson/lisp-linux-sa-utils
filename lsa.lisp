@@ -112,9 +112,9 @@
    )
   )
 
-(defun add-vnet (pif ip cidr-block)
+(defun add-vlan (pif ip cidr-block)
   (unless (and ip cidr-block)
-    (error "add-vnet - must supply ip and cidr-block"))
+    (error "add-vlan - must supply ip and cidr-block"))
   (handler-case
       (progn
 	(incf *vlan-id*)
@@ -124,7 +124,7 @@
 	   :for (str _ xit-code) = (multiple-value-list (inferior-shell:run (format nil "/sbin/ip link show ~a.~a" pif *vlan-id*)  :on-error nil))
 	   :until (eq xit-code 0)
 	   :do (print i))
-	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vland-id*))
+	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*))
 	*vlan-id*
 	)
     (t (c)
@@ -134,7 +134,7 @@
   )
 
 
-(defun up-vlan(id)
+(defun up-vlan (id)
   (handler-case
       (inferior-shell:run/s (format nil "/sbin/ip link set dev wlan.~a up" *vland-id*))
     (t (c)
@@ -143,7 +143,7 @@
     )
   )
   
-(defun del-vnet (id)
+(defun del-vlan (id)
   (handler-case
       (progn
 	(inferior-shell:run/s (format nil "/sbin/ip set dev wlan0.~a down" id))

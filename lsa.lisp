@@ -158,7 +158,7 @@
 (defun del-addr (pif ip cidr-block)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a dev ~a" (numex:->dotted ip) cidr-block) pif)
+	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block) pif)
 	)
     (t (c)
       (format t "We caught a condition.~&")
@@ -166,13 +166,28 @@
     )
   )
 
+(defun disable-xtalk (neta netb cidrb)
+  (handler-case
+      (progn
+	(inferior-shell:run (format nil "/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  neta cidrb netb cidrb))
+	(inferior-shell:run (format nil "/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  neta cidrb netb cidrb))
+	)
+    (t (c)
+      (format t "We caught a condition.~a~&" c)
+      (values nil c))
+    )
+  )
+	
+
+iptables -I FORWARD -s 192.168.1.0/24 -d 192.168.2.0/24 -j DROP
+
 (defun add-addr (pif ip cidr-block)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip address add ~a/~a dev ~a" (numex:->dotted ip) cidr-block pif))
+	(inferior-shell:run (format nil "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif))
 	)
     (t (c)
-      (format t "We caught a condition.~&")
+      (format t "We caught a condition.~a~&" c)
       (values nil c))
     )
   )

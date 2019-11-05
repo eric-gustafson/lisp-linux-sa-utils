@@ -179,8 +179,6 @@
   )
 	
 
-iptables -I FORWARD -s 192.168.1.0/24 -d 192.168.2.0/24 -j DROP
-
 (defun add-addr (pif ip cidr-block)
   (handler-case
       (progn

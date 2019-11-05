@@ -13,6 +13,7 @@
    :ip-link-objs
    :addr
 
+   :disable-xtalk
    :add-vlan
    :del-vlan
    :up-vlan

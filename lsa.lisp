@@ -170,7 +170,7 @@
   (handler-case
       (progn
 	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
-	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
+	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
 	)
     (t (c)
       (format t "~a: condition.~a~&" :disable-xtalk c)

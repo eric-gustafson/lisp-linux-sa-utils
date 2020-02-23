@@ -5,16 +5,43 @@
 (defclass link ()
   (
    (name :accessor name :initarg :name :initform "")
+   (path :accessor path :initarg :path :initform nil)
    (mtu  :accessor mtu :initarg :mtu :initform "")
    (qdisk :accessor qdisk :initarg :qdisk :initform "")
    (state :accessor state :initarg :state :initform  "")
    (mode :accessor mode :initarg :mode :initform "")
    (group :accessor group :initarg :group :initform "")
    (mac :accessor mac :initarg :mac :initform "")
+   (addr-len :accessor addr-len :initarg :addr-len :initform nil)xo
    (ltype :accessor ltype :initarg :ltype :initform "")
+   (hwtype :accessor hwtype :initarg :hwtype :initform nil :documentation "the hardware type which is found in the /proc file system and is given as part of the dhcp/bootp hw type ")
    (broadcast :accessor broadcast :initarg :broadcast :initform "")
    ;; (:accessor :initarg :initform)
    )
+  )
+
+(defun /sys->link-obj ()
+  "Use the proc file system to return link objects for the system"
+  (let (
+	(stuff)
+	(dir #P"/sys/class/net/*")
+	)
+    (loop :for de :in (uiop:directory* dir) :do
+       (let ((name (car (reverse (pathname-directory de))))
+	     (mac (car (uiop:read-file-lines (merge-pathnames de  "address"))))
+	     (addrlen (parse-integer (car (uiop:read-file-lines (merge-pathnames de "addr_len")))))
+	     (type (parse-integer (car (uiop:read-file-lines (merge-pathnames de "type")))))
+	     )
+	 (push (make-instance 'link
+			      :mac mac
+			      :name name
+			      :path de
+			      :hwtype type
+			      :addr-len addrlen
+			      )
+	       stuff))
+       )
+    stuff)
   )
 
 (defclass ip-addr (link)
@@ -155,41 +182,41 @@
     )
   )
 
+(defmacro shell-run/s (fmtstr &rest args)
+  `(handler-case
+       (inferior-shell:run/s (format nil ,fmtstr ,@args))
+     (t (c)
+       (format t "shell-error:~a~&" c)
+       (values nil c)
+       )
+     ))
+
 (defun del-addr (pif ip cidr-block)
-  (handler-case
-      (progn
-	(inferior-shell:run/s (format nil "/sbin/ip address del ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block) pif)
-	)
-    (t (c)
-      (format t "We caught a condition.~&")
-      (values nil c))
-    )
+  (shell-run/s "/sbin/ip address del ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
   )
 
+(defun add-addr (pif ip cidr-block)
+  (shell-run/s "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
+  )
+
+
+;; note-to-self:  Only drop the traffic for the default case when the target network is under the
+;;  agents control, it's responsability.
 (defun disable-xtalk (neta netb cidrb)
   (handler-case
       (progn
-	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
-	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
+	#+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
+	#+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
+	;; Drop all traffic to this device by default.
+	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
 	)
     (t (c)
       (format t "~a: condition.~a~&" :disable-xtalk c)
       (values nil c))
     )
   )
-	
 
-(defun add-addr (pif ip cidr-block)
-  (handler-case
-      (progn
-	(inferior-shell:run (format nil "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif))
-	)
-    (t (c)
-      (format t "Error ~a:~a~&" :add-addr c)
-      (values nil c))
-    )
-  )
-  
+
 (defun ip-link ()
   (common-splitter (inferior-shell:run/s "/sbin/ip link"))
   )
@@ -331,7 +358,7 @@
   
 (stringhere:enable-txt-syntax)	  
  
-(defun hostapd (iface ssid passphrase)
+(defun hostapd (iface ssid passphrase &key (channel 1))
   (declare (type (string iface)))
   (let ((output
 	 (with-output-to-string (*standard-output*)
@@ -344,7 +371,7 @@ driver=nl80211
 country_code=US
 ssid=,(princ ssid)
 hw_mode=g
-channel=1
+channel=,(princ channel)
 wpa=2
 wpa_passphrase=,(princ passphrase)
 ## Key management algorithms ##                                                                                                                        

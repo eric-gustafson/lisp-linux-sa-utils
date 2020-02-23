@@ -19,6 +19,15 @@
    :up-vlan
    :add-addr
    :del-addr
+
+   ;; link object
+   :name
+   :path
+   :mac
+   :addr-len
+   :hwtype
+   
+   :/sys->link-obj
    
    )
   )

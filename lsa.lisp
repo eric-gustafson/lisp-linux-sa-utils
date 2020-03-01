@@ -371,6 +371,13 @@ driver=nl80211
 country_code=US
 ssid=,(princ ssid)
 hw_mode=g
+
+## gus - added 2020-03-01
+ieee80211n=1
+wmm_enabled=1
+ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+ignore_broadcast_ssid=0
+
 channel=,(princ channel)
 wpa=2
 wpa_passphrase=,(princ passphrase)

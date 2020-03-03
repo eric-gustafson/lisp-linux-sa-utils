@@ -20,6 +20,39 @@
    )
   )
 
+(defun machine-info-model ()
+  (loop :for e :in (uiop:read-file-lines #P"/proc/cpuinfo")
+     :if (ppcre:scan "Model" e) :do
+       (return e))
+  )
+
+(defun machine-info-string-to-type (str)
+  "This is just me exploring what might be useful"
+  (let ((sig (ppcre:split "\\s+" str)))
+    (trivia:match
+	sig
+      ((list* "Raspberry" "Pi" rest)
+       (values :raspberry-pi sig))
+      ))
+  )
+
+(defun raspberry-pi? ()
+  "returns a list of additional information about the raspberry-pi if true, nil otherwise"
+  (let ((sig (ppcre:split "\\s+" (machine-info))))
+    (trivia:match
+	sig
+      ((list* "Raspberry" "Pi" rst) rst)
+      )))
+
+(defun machine-info()
+  (trivia:match
+      (machine-info-model)
+    ((and (type string)
+	  (ppcre "^Model[^:]+:\\s+(.*)" x))
+     x)
+    )
+  )
+
 (defun /sys->link-obj ()
   "Use the proc file system to return link objects for the system"
   (let (

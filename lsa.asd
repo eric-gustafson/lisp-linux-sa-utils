@@ -16,5 +16,7 @@
 	       #:numex
 	       )
   :components ((:file "package")
-               (:file "lsa"))
+               (:file "lsa")
+	       (:file "wireless-info")
+	       )
   )

@@ -1,12 +1,17 @@
 ;;;; package.lisp
 
 (defpackage #:lsa
-  (:use #:cl #:serapeum)
+  (:shadowing-import-from #:trivia @)
+  (:use #:cl #:serapeum #:trivia #:trivia.ppcre)
   (:export
+
+   :iw-dev-raw
+   :iw-dev-simple
    :ip-link
    :iwconfig-interface-list
    :ip-addr
    :hostapd
+   :raspbery-pi?
    :link
    :name :mtu :qdisk :state :mode :group :mac :ltype :broadcast
    :ip-addr-objs

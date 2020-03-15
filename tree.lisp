@@ -44,53 +44,71 @@
   (unless (every #'atom path)
     (error "Invalid path ~a" path)))
 
-(defmethod cd! ((obj tree) (path list) &key if-not-exist)
-  ;; build new stack with path
-  (check-for-valid-path path)
-  (with-slots (root stack ptr) obj
-    (let ((r root)
-	  (s stack)
-	  (p ptr))
-      (setf ptr root)
-      (loop :for e :in path :do
-	   (cd! obj e))
-      )
+
+(defun cd! (obj path &key if-not-exist)
+  (cond
+    ((listp path)
+     (check-for-valid-path path)
+     (with-slots (root stack ptr) obj
+       (setf ptr root)
+       (loop :for e :in path :do
+	    (cd! obj e :if-not-exist if-not-exist))
+       ))
+    ((stringp path)
+     (with-slots (root stack ptr) obj
+       (cond
+	 ((equal "/" path)
+	  (setf stack nil)
+	  (setf ptr root)
+	  )
+	 ((equal ".." path)
+	  (when stack
+	    (setf ptr (pop stack))))
+	 (t
+	  (let (found)
+	    (loop :for e :in ptr
+	       :do
+		 (when (and (consp e)
+			    (equal (car e) path))
+		   (push ptr stack)
+		   ;; move the pointer to this new 'directory'
+		   (setf ptr e)
+		   (setf found t)
+		   (loop-finish))
+		 )
+	    (unless found
+	      (cond
+		((eq :create if-not-exist)
+		 (mkdir! obj path)
+		 (cd! obj path)
+		 )
+		(t
+		 (error "Could not find subtree ~a" path))
+		))
+	    )
+	  )
+	 )
+       )
+     )
+    (t
+     (error "Unexpected parameter: ~a~&" path))
     )
   )
 
-(defmethod cd! ((obj tree) (dir string) &key if-not-exist)
+(defmethod mkdir! ((obj tree) (dirname string))
   (with-slots (root stack ptr) obj
     (cond
-      ((equal ".." dir)
-       (when stack
-	 (setf ptr (pop stack))))
+      ((null root)
+       (setf root `((,dirname)))
+       (setf ptr root))
       (t
-       (let ((found nil))
-	 (loop :for e :in ptr
-	    :do
-	      (when (and (consp e)
-			 (equal (car e) dir))
-		(push ptr stack)
-		;; move the pointer to this new 'directory'
-		(setf ptr e)
-		(setf found)
-		(loop-finish))
-	      )
-	 (unless found (error "Could not find subtree ~a" dir))
-	 ))
+       (when (consp ptr)
+	 (let ((nxt (cdr ptr)))
+	   (setf (cdr ptr) (cons (list dirname) nxt)))
+	 )
+       )
       )
     )
   )
-
-(defmethod mkdir ((obj tree) (dirname string))
-  ""
-  (with-slots (root stack ptr) obj
-    (when (consp ptr)
-      (let ((nxt (cdr ptr)))
-	(setf (cdr ptr) (cons (list dirname) nxt)))
-      )
-    )
-  )
-  
 
 

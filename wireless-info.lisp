@@ -29,6 +29,7 @@
 	    (add! tree (intern w :keyword) stuff))
 	   )
 	 )
+    tree
     )
   )
 

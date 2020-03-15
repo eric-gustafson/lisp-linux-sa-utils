@@ -18,5 +18,7 @@
   :components ((:file "package")
                (:file "lsa")
 	       (:file "wireless-info")
+	       (:file "hostapd")
+	       (:file "tree")
 	       )
   )

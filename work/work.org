@@ -2,82 +2,6 @@
 #+author: eric gustafson
 #+startup: overview
 
-* TODO interfaces function call for local interaces
-
-* TODO we also want to do this on a remote router
-
-
-* TODO manage hostapd
-
-  A Unix shell like fork/exec and then watch the pid from here should
-  be pretty trivial.
-
-#+BEGIN_SRC sh :results output raw
-  sudo /usr/sbin/hostapd -d /tmp/hostapd.conf  2>&1
-:
-#+END_SRC
-
-#+RESULTS:
-sudo: no tty present and no askpass program specified
-random: Trying to read entropy from /dev/random
-Configuration file: /etc/hostapd/hostapd.conf
-Could not read interface ap0 flags: No such device
-nl80211: Driver does not support authentication/association or connect commands
-nl80211: deinit ifname=ap0 disabled_11b_rates=0
-nl80211: Remove monitor interface: refcount=0
-netlink: Operstate: ifindex=0 linkmode=0 (kernel-control), operstate=6 (IF_OPER_UP)
-Could not read interface ap0 flags: No such device
-nl80211: Set mode ifindex 0 iftype 2 (STATION)
-nl80211: Failed to set interface 0 to mode 2: -19 (No such device)
-nl80211 driver initialization failed.
-hostapd_interface_deinit_free(0xf608f0)
-hostapd_interface_deinit_free: num_bss=1 conf->num_bss=1
-hostapd_interface_deinit(0xf608f0)
-ap0: interface state UNINITIALIZED->DISABLED
-hostapd_bss_deinit: deinit bss ap0
-ap0: AP-DISABLED 
-hostapd_cleanup(hapd=0xf628a8 (ap0))
-hostapd_free_hapd_data: Interface ap0 wasn't started
-hostapd_interface_deinit_free: driver=(nil) drv_priv=(nil) -> hapd_deinit
-hostapd_interface_free(0xf608f0)
-hostapd_interface_free: free hapd 0xf628a8
-hostapd_cleanup_iface(0xf608f0)
-hostapd_cleanup_iface_partial(0xf608f0)
-hostapd_cleanup_iface: free iface=0xf608f0
-
-
-#+BEGIN_SRC sh :results output raw
-   cat /etc/hostapd/hostapd.conf
-#+END_SRC
-
-#+RESULTS:
-### Wireless network name ###
-
-interface=ap0
-driver=nl80211
-country_code=US
-ssid=g3
-hw_mode=g
-channel=1
-wpa=2
-wpa_passphrase=bustergus25
-## Key management algorithms ##
-wpa_key_mgmt=WPA-PSK
-
-## Set cipher suites (encryption algorithms) ##
-## TKIP = Temporal Key Integrity Protocol
-## CCMP = AES in Counter mode with CBC-MAC
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
-
-## Shared Key Authentication ##
-auth_algs=1
-
-## Accept all MAC address ###
-macaddr_acl=0
-
-
-
 
 * TODO algo1
   get list of network interfaces or seed it.
@@ -88,35 +12,15 @@ macaddr_acl=0
 
   generate hostapd and fork/exec
 
-  setup interace
+  setup interface
   
 
 * TODO udev info
   [[https://opensource.com/article/18/11/udev]]  
+  
 
-* TODO network/interfaces file
-  Generate this file taking a list of interface CLOS objects
-
-#+BEGIN_SRC lisp :results output
-   (princ (network/interfaces))
-#+END_SRC
-
-
-
-* TODO write a script that burns the RBP image, and puts these file in the images
-  cpio them right onto the image?  Or something simpler?
-
-* TODO snot has interfaces, local-net, ...
-  wifi will have these as well.  Maybe a new library?  Anyhow, organize, organize
-
-
-* TODO kick off a nmap if we see a local address
-
-** TODO predicate if it's a new address
-** TODO predicate if we need a refresh
-
-** simultaneous AP and managed mode
-*** udev rule
+* simultaneous AP and managed mode
+** udev rule
 #+BEGIN_SRC 
 SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="b8:27:eb:ff:ff:ff", KERNEL=="phy0", \
   RUN+="/sbin/iw phy phy0 interface add ap0 type __ap", \
@@ -148,23 +52,55 @@ SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="b8:27:eb:ff:ff:
 #+end_example
 
 
+* Parsing Challenges and Examples
 
+** TODO Make unit tests out of these
+
+** TODO Produce documentation from these
+
+** ifconfig
+  - lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
 
 #+BEGIN_SRC sh :results output
   ifconfig
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 4040  bytes 784591 (766.2 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 4040  bytes 784591 (766.2 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:87:45:88  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlo1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.11.124  netmask 255.255.255.0  broadcast 192.168.11.255
+        inet6 fe80::2ba4:9934:e976:da52  prefixlen 64  scopeid 0x20<link>
+        ether 48:45:20:ef:5b:e6  txqueuelen 1000  (Ethernet)
+        RX packets 153661  bytes 132536356 (126.3 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 60616  bytes 8713473 (8.3 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+#+end_example
 
 
-#+BEGIN_SRC sh :results raw
-  ip link
-#+END_SRC
 
 
-#+BEGIN_SRC lisp  :results table
-  (ip-link)
-#+END_SRC
+
+
+
 
 ** TODO get wireless information
 

@@ -11,7 +11,10 @@
    :iwconfig-interface-list
    :ip-addr
    :hostapd
+   
    :raspbery-pi?
+   :ensure-monitor!!
+   
    :link
    :name :mtu :qdisk :state :mode :group :mac :ltype :broadcast
    :ip-addr-objs

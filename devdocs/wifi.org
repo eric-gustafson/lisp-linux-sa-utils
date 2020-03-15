@@ -15,7 +15,7 @@
 : Linux athena 4.15.0-51-generic #55-Ubuntu SMP Wed May 15 14:27:21 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
 : athena
 
-*** diw dev
+*** iw dev
 #+BEGIN_SRC sh :results output
   iw dev 
 #+END_SRC

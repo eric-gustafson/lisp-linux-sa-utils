@@ -12,7 +12,7 @@
    :ip-addr
    :hostapd
    
-   :raspbery-pi?
+   :raspberry-pi?
    :ensure-monitor!!
    
    :link

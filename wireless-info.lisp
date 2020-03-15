@@ -74,13 +74,15 @@
 ;; Note, not sure how to target when we have more than 1 interface, but since
 ;; I don't know why trying to setup monitoring would ever be bad, we just do it
 ;; for all.  Kind of a broad-spectrum approach.
-
+(defun setup-monitor-command (phys-id)
+  (format nil "iw phy phy~a interface add mon~a type monitor && ifconfig mon~a up"
+	  phys-id phys-id phys-id))
+  
 (defun ensure-monitor!! ()
   "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
-	 (let ((cmd (format nil "iw phy phy~a interface add mon~a type monitor && ifconfig mon~a up"
-			    n n n)))
+	 (let ((cmd ))
 	   (inferior-shell:run  cmd)
 	   )
 	 )

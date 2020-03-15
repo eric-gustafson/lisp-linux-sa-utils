@@ -17,19 +17,21 @@
   (ppcre:split *iw-dev-scanner-splitter* txt))
 
 (defun iw-dev->tree (txt)
-  (let ((tree (make-instance 'tree)))
+  (let ((tree (make-instance 'tree))
+	phy)
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
 	 (trivia:match
 	     l
-	   ((trivia.ppcre:ppcre "^phy#(\\d+).*" phy-n)
-	    (cd! tree  `(,(chomp-and-count l)) :if-not-exist :create))
-	   ((trivia.ppcre:ppcre "^Interface\\s+(.+)" iface-name)
-	    (cd! tree iface-name :if-not-exist :create))
-	   ((trivia.ppcre:ppcre "^\\s+(\\w+)\\s+(.*)" w stuff)
-	    (add! tree (intern w :keyword) stuff))
+	   ((trivia.ppcre:ppcre "^phy#\\d+.*")
+	    (setf phy (chomp-and-count l))
+	    (cd! tree  `(,phy) :if-not-exist :create))
+	   ((trivia.ppcre:ppcre "Interface\\s+(.+)" iface-name)
+	    (cd! tree `(,phy ,iface-name) :if-not-exist :create))
+	   ((trivia.ppcre:ppcre "\\s+(\\w+)\\s+(.*)" w stuff)
+	    (add! tree (intern (string-upcase w) :keyword) stuff))
 	   )
 	 )
-    tree
+    (root tree)
     )
   )
 
@@ -57,16 +59,30 @@
 		 (ip-link))
   )
 
-(defun get-monitor-phy-target ()
-  "returns phy0, phy1 ... based on an inspection of the underlying O.S."
-  "phy0")
+
+(defun phys-iota (txt)
+  "Returns a list of integers for each of the physical-wireless interfaces"
+  (serapeum:collecting
+    (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
+	 (trivia:match
+	     l
+	   ((trivia.ppcre:ppcre "^phy#(\\d+).*" n)
+	    (collect (parse-number n))))
+	 ))
+  )
+
+;; Note, not sure how to target when we have more than 1 interface, but since
+;; I don't know why trying to setup monitoring would ever be bad, we just do it
+;; for all.  Kind of a broad-spectrum approach.
 
 (defun ensure-monitor!! ()
-  "Create a monitor interface on each of the AP links."
+  "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
-    (let ((cmd (format nil "iw phy ~a interface add mon0 type monitor && ifconfig mon0 up"
-		       (get-monitor-phy-target))))
-      (inferior-shell:run  cmd)
-      )
+    (loop :for n :in (phys-iota) :do
+	 (let ((cmd (format nil "iw phy phy~a interface add mon0 type monitor && ifconfig mon0 up"
+			    n)))
+	   (inferior-shell:run  cmd)
+	   )
+	 )
     )
   )

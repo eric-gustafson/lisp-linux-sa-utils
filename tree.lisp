@@ -95,6 +95,7 @@
     )
   )
 
+
 (defmethod mkdir! ((obj tree) (dirname string))
   (with-slots (root stack ptr) obj
     (cond

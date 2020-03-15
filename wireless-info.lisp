@@ -60,7 +60,7 @@
   )
 
 
-(defun phys-iota (txt)
+(defun phys-iota (&key (txt (iw-dev-raw)))
   "Returns a list of integers for each of the physical-wireless interfaces"
   (serapeum:collecting
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do

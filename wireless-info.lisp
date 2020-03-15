@@ -79,8 +79,8 @@
   "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
-	 (let ((cmd (format nil "iw phy phy~a interface add mon0 type monitor && ifconfig mon0 up"
-			    n)))
+	 (let ((cmd (format nil "iw phy phy~a interface add mon~a type monitor && ifconfig mon~a up"
+			    n n n)))
 	   (inferior-shell:run  cmd)
 	   )
 	 )

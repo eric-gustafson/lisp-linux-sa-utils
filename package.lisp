@@ -11,6 +11,8 @@
    :iwconfig-interface-list
    :ip-addr
    :hostapd
+
+   :wifi-info
    
    :raspberry-pi?
    :ensure-monitor!!

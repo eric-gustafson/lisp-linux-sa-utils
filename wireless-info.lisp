@@ -2,9 +2,24 @@
 
 (defparameter *iw-dev-scanner-splitter* (ppcre:create-scanner "^phy#\\d+:" :multi-line-mode t))
 
+(defvar *wifi-info-buffer* nil)
+
+(defun wifi-info ()
+  (unless
+      *wifi-info-buffer*
+    (setf *wifi-info-buffer* (inferior-shell:run/s "iw list")))
+  *wifi-info-buffer*
+  )
+
+
 (defun iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
   (inferior-shell:run/s "iw dev")
+  )
+
+(defvar tseq (list 1 2 3 3 2 33 1 2 3 3 4 4 2 3 3 1 2))
+
+(defun seq->tree (s)
   )
 
 (defun iw-dev-simple ()
@@ -15,6 +30,31 @@
 
 (defun iw-dev-split-phy*-buff (txt)
   (ppcre:split *iw-dev-scanner-splitter* txt))
+
+;; TODO Get this into a tree so that we can than reduce
+;;  using patterns and other high level constructs
+(defun iw-list->tree (&key (txt (wifi-info)))
+  (let ((tree (make-instance 'tree))
+	phy)
+    (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
+	 (multiple-value-bind (w score)
+	     (chomp-and-count l)
+	   
+	 (trivia:match
+	     l
+	   ((trivia.ppcre:ppcre "^Wiphy\\s+phy(\\d+).*" n)
+	    (setf phy n)
+	    )
+	   ((trivia.ppcre:ppcre "Supported Ciphers:.*")
+	    (cd! tree `(phy "Ciphers"))
+	    )
+	   (otherwise
+	    (add@! tree '(,phy "wtf") l)
+	    )
+	   )
+	 )
+    (root tree))
+  )
 
 (defun iw-dev->tree (txt)
   (let ((tree (make-instance 'tree))

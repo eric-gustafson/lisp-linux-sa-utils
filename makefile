@@ -1,8 +1,9 @@
 export SHELL=/bin/bash
 
-##  For now, this is just used to test if things can be compiled from source
-maketest: maketest.ros lisp-linux-sa-utils.lisp
+LISP_FILES=$(wildcard *.lisp)
+
+ut: ut.ros $(LISP_FILES)
 	ros -Q build $<
 
 clean:
-	- rm maketest
+	- rm ut

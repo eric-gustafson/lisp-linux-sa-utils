@@ -34,7 +34,7 @@
 
 ;; TODO Get this into a tree so that we can than reduce
 ;;  using patterns and other high level constructs
-(defun iw-list->tree (&key (txt (wifi-info)))
+#+nil(defun iw-list->tree (&key (txt (wifi-info)))
   (let ((tree (make-instance 'tree))
 	phy)
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
@@ -50,10 +50,10 @@
 	    (cd! tree `(phy "Ciphers"))
 	    )
 	   (otherwise
-	    (add@! tree '(,phy "wtf") l)
+	    (add@! tree `(,phy "wtf") l)
 	    )
 	   )
-	 )
+	 ))
     (root tree))
   )
 

@@ -17,9 +17,10 @@
   (inferior-shell:run/s "iw dev")
   )
 
-(defvar tseq (list 1 2 3 3 2 33 1 2 3 3 4 4 2 3 3 1 2))
 
 (defun seq->tree (s)
+  "Takes a sequence and builds a tree from it"
+  1
   )
 
 (defun iw-dev-simple ()

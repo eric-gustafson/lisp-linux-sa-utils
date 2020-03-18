@@ -13,6 +13,7 @@
    :hostapd
 
    :wifi-info
+   :seq->tree
    
    :raspberry-pi?
    :ensure-monitor!!

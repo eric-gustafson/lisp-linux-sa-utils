@@ -180,7 +180,7 @@ list and append it to the queue at what is the new top of the stack"
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
 	 (let ((cmd (setup-monitor-command n)))
-	   (inferior-shell:run  cmd)
+	   (inferior-shell:run cmd :on-error nil)
 	   )
 	 )
     )

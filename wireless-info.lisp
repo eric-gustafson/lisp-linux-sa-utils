@@ -179,7 +179,7 @@ list and append it to the queue at what is the new top of the stack"
   "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
-	 (let ((cmd ))
+	 (let ((cmd (setup-monitor-command n)))
 	   (inferior-shell:run  cmd)
 	   )
 	 )

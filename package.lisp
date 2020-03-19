@@ -2,7 +2,7 @@
 
 (defpackage #:lsa
   (:shadowing-import-from #:trivia @)
-  (:use #:cl #:serapeum #:trivia #:trivia.ppcre)
+  (:use #:cl #:serapeum #:trivia #:trivia.ppcre )
   (:export
 
    :split-into-lines

@@ -11,6 +11,8 @@
 	       #:uiop
 	       #:trivia
 	       #:trivia.ppcre
+	       #:optima
+	       #:optima.ppcre
 	       #:inferior-shell
 	       #:stringhere
 	       #:numex

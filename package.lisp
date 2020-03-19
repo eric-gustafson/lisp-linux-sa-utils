@@ -5,6 +5,10 @@
   (:use #:cl #:serapeum #:trivia #:trivia.ppcre)
   (:export
 
+   :split-into-lines
+   :chomp-and-count
+   :iw-list-level
+   
    :iw-dev-raw
    :iw-dev-simple
    :ip-link

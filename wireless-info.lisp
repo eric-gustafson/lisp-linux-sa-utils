@@ -11,22 +11,77 @@
   *wifi-info-buffer*
   )
 
-
 (defun iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
   (inferior-shell:run/s "iw dev")
   )
 
-
-(defun seq->tree (s)
-  "Takes a sequence and builds a tree from it"
-  1
+(defun update-queue (stack-o-queues e level-key)
+  ;; returns true if we could update the stack-queue with the value
+  (destructuring-bind (stack-lev stack-q)
+      (car stack-o-queues)
+    (let ((elev (funcall level-key e)))
+      (cond
+	((> elev stack-lev) 
+	 (push (list elev (serapeum:queue e)) stack-o-queues)
+	 )
+	((= elev stack-lev)
+	 (serapeum:enq e stack-q)
+	 stack-o-queues
+	 )
+	)
+      )
+    )
   )
+
+(defun pop-and-combine (squeue)
+  "Take the queue off of the top of the stack, and convert it to a
+list and append it to the queue at what is the new top of the stack"
+  (let* ((old (pop squeue))
+	 (new (car squeue))
+	 (oq (cadr old))
+	 (nq (cadr new)))
+    (serapeum:enq (serapeum:qlist oq) nq)
+    squeue
+    ))
+
+(defun seq->tree (seq &key (level-key #'car) (level-init 1))
+  "Takes a sequence and builds a tree from it.  It rebuilds a
+  depth-first tree traversal.  The level-key function gets the level
+  that the element belongs to."
+  (let (
+	(level-stack-queue (list (list level-init (serapeum:queue)))) ;; A stack of queues
+	)
+    (map 'list
+	 #'(lambda(e)
+	     (loop :do
+		  (let ((stack (update-queue level-stack-queue e level-key)))
+		    (when stack
+		      (setf level-stack-queue stack)
+		      (loop-finish))
+		    (setf level-stack-queue (pop-and-combine level-stack-queue))
+		    )
+		  ))
+	 seq
+	 )
+    (loop :while (> (length level-stack-queue) 1) :do
+	 (setf level-stack-queue (pop-and-combine level-stack-queue))
+	 )
+    (apply #'append
+	   (mapcar (lambda(obj)
+		     (serapeum:qlist (cadr obj)))
+		   level-stack-queue))
+    )
+  )
+
+(defun split-into-lines (txt)
+  (ppcre:split "(\\n|\\r)" txt))
+  
 
 (defun iw-dev-simple ()
   "Return 'iw dev' as a (list (phys  (interface ...) (interface ..))
                               ...)"
-  (ppcre:split "(\\n|\\r)" (iw-dev-raw))
+  (split-into-lines (iw-dev-raw))
   )
 
 (defun iw-dev-split-phy*-buff (txt)
@@ -34,28 +89,29 @@
 
 ;; TODO Get this into a tree so that we can than reduce
 ;;  using patterns and other high level constructs
-#+nil(defun iw-list->tree (&key (txt (wifi-info)))
-  (let ((tree (make-instance 'tree))
-	phy)
-    (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
-	 (multiple-value-bind (w score)
-	     (chomp-and-count l)
-	   
-	 (trivia:match
-	     l
-	   ((trivia.ppcre:ppcre "^Wiphy\\s+phy(\\d+).*" n)
-	    (setf phy n)
-	    )
-	   ((trivia.ppcre:ppcre "Supported Ciphers:.*")
-	    (cd! tree `(phy "Ciphers"))
-	    )
-	   (otherwise
-	    (add@! tree `(,phy "wtf") l)
-	    )
-	   )
-	 ))
-    (root tree))
+(defun iw-list-level (line)
+  (nth-value 1 (chomp-and-count line))
   )
+
+(defun tree-walker (tree)
+  (optima:match
+   tree
+   (() '())
+   ((cons (and (type string)
+	       (optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
+    (let ((num (parse-integer n)))
+      (cons :phy (cons num (tree-walker rest)))))
+   ((type string)
+    (chomp-and-count tree))
+   ((cons car cdr)
+    (cons (tree-walker car)
+	  (tree-walker cdr))))
+  )
+
+(defun iw-list->tree (&key (txt (wifi-info)))
+  (let* ((seq (split-into-lines txt)))
+    (seq->tree seq :level-key #'iw-list-level :level-init 0)
+    ))
 
 (defun iw-dev->tree (txt)
   (let ((tree (make-instance 'tree))
@@ -63,7 +119,7 @@
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
 	 (trivia:match
 	     l
-	   ((trivia.ppcre:ppcre "^phy#\\d+.*")
+	     ((trivia.ppcre:ppcre "^phy#\\d+.*")
 	    (setf phy (chomp-and-count l))
 	    (cd! tree  `(,phy) :if-not-exist :create))
 	   ((trivia.ppcre:ppcre "Interface\\s+(.+)" iface-name)

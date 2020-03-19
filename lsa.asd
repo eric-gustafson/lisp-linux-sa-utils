@@ -14,6 +14,7 @@
 	       #:inferior-shell
 	       #:stringhere
 	       #:numex
+	       #:cffi
 	       )
   :components ((:file "package")
                (:file "lsa")

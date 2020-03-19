@@ -194,7 +194,6 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
     )
   )
 
-
 (defun up-vlan (id)
   (handler-case
       (inferior-shell:run/s (format nil "/sbin/ip link set dev wlan.~a up" *vland-id*))
@@ -207,7 +206,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defun del-vlan (id)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip set dev wlan0.~a down" id))
+	(inferior-shell:run/s (format nil "/sbin/ip link set dev wlan0.~a down" id))
 	(inferior-shell:run/s (format nil "/sbin/ip link delete wlan0.~a" id))
 	)
     (t (c)

@@ -12,10 +12,36 @@
   *wifi-info-buffer*
   )
 
+(defun get-temp-file ()
+  (let* ((i (random  1000000))
+	 (fname (format nil "~a~a" (uiop:temporary-directory) i) ))
+    (if (probe-file fname)
+	(get-temp-file)
+	fname)))
+
+(cffi:defcfun "waitpid" :int (pid :int) (int :pointer))
+
 (defun iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
-  (inferior-shell:run/s "iw dev")
+  (let ((p1 (eazy-process:shell `("iw" "dev"))))
+    (with-output-to-string (output)
+      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
+	(uiop:copy-stream-to-stream s output)))
+    )
+       #+nil(let ((path (get-temp-file)))
+    (format t "path ~a~%" path)
+    (let* ((pobj (uiop:launch-program "iw dev" :output path))
+	   (wrv (cffi:foreign-alloc :int :initial-element 0 ))
+	   (pid (uiop:process-info-pid pobj)))
+      (let ((rv (waitpid pid wrv)))
+	(format t "waitpid ~a, pid=~a~%" rv pid))
+      (uiop:wait-process pobj)
+      (format t "reading file~%")
+      (values (uiop:read-file-string path)
+	      path)
+      ))
   )
+
 
 (defun update-queue (stack-o-queues e level-key)
   ;; returns true if we could update the stack-queue with the value
@@ -196,7 +222,8 @@ device-ids of the system (linux)"
 
 
 (defun ensure-monitor!! ()
-  "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
+  "Create a monitor interface on each of the AP links.  We currently
+brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
 	 (when (phy-supports-monitor? n)

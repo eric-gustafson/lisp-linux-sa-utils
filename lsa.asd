@@ -17,6 +17,7 @@
 	       #:stringhere
 	       #:numex
 	       #:cffi
+	       #:eazy-process 
 	       )
   :components ((:file "package")
                (:file "lsa")

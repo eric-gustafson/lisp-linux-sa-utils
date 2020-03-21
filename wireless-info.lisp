@@ -4,7 +4,8 @@
 
 (defvar *wifi-info-buffer* nil)
 
-(defun wifi-info ()
+(defun iw-list-info ()
+  "memoize the text output from running the iw list linux command"
   (unless
       *wifi-info-buffer*
     (setf *wifi-info-buffer* (inferior-shell:run/s "iw list")))
@@ -90,6 +91,7 @@ list and append it to the queue at what is the new top of the stack"
 ;; TODO Get this into a tree so that we can than reduce
 ;;  using patterns and other high level constructs
 (defun iw-list-level (line)
+  "process the linux iw list command, putt"
   (nth-value 1 (chomp-and-count line))
   )
 
@@ -100,36 +102,16 @@ list and append it to the queue at what is the new top of the stack"
    ((cons (and (type string)
 	       (optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
     (let ((num (parse-integer n)))
-      (cons :phy (cons num (tree-walker rest)))))
+      (cons (list :phy num) (tree-walker rest))))
+   ((cons (and (type string)
+	       (optima.ppcre:ppcre "Supported interface modes:")
+	       ) rest)
+    (cons :modes (tree-walker rest)))
    ((type string)
     (chomp-and-count tree))
    ((cons car cdr)
     (cons (tree-walker car)
 	  (tree-walker cdr))))
-  )
-
-(defun iw-list->tree (&key (txt (wifi-info)))
-  (let* ((seq (split-into-lines txt)))
-    (seq->tree seq :level-key #'iw-list-level :level-init 0)
-    ))
-
-(defun iw-dev->tree (txt)
-  (let ((tree (make-instance 'tree))
-	phy)
-    (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
-	 (trivia:match
-	     l
-	     ((trivia.ppcre:ppcre "^phy#\\d+.*")
-	    (setf phy (chomp-and-count l))
-	    (cd! tree  `(,phy) :if-not-exist :create))
-	   ((trivia.ppcre:ppcre "Interface\\s+(.+)" iface-name)
-	    (cd! tree `(,phy ,iface-name) :if-not-exist :create))
-	   ((trivia.ppcre:ppcre "\\s+(\\w+)\\s+(.*)" w stuff)
-	    (add! tree (intern (string-upcase w) :keyword) stuff))
-	   )
-	 )
-    (root tree)
-    )
   )
 
 (defun chomp-and-count (str)
@@ -142,11 +124,38 @@ list and append it to the queue at what is the new top of the stack"
     )
   )
 
-(defun wsparse (buff)
+#+nil(defun wsparse (buff)
   "Turn a block of text into a tree"
   (loop :for l :in (ppcre:split "(\\n|\\r)" buff)
      :collect (multiple-value-list (chomp-and-count l)))
-  
+  )
+
+(defun iw-dev-tree (&key (txt (iw-list-info)))
+  (let* ((seq (split-into-lines txt)))
+    (tree-walker (seq->tree seq :level-key #'iw-list-level :level-init 0))
+    ))
+
+(defun get-dev (dev-lst &key key )
+  "get device-tree by number, if key is nil return the numeric
+device-ids of the system (linux)"
+  (unless dev-lst
+    (setf dev-lst (iw-dev-tree)))
+  (cond
+    ((null key)
+     (serapeum:filter-map (optima.extra:lambda-match
+			    ((list :phy n) n))
+			  dev-lst))
+    ((numberp key)
+     (loop :for (A tree) :on dev-lst :by #'cddr :do
+	  (match
+	      A
+	    ((list :phy n)
+	     (format t "~a,key=~a,number? ~a~%" n  key (equal key n))
+	     (when (and (numberp n)
+			(equal n key))
+	       (return-from get-dev tree)))))
+     nil)
+    )
   )
 
 (defun monitor-exists? ()
@@ -155,7 +164,6 @@ list and append it to the queue at what is the new top of the stack"
 		   (search "mon" (car obj)))
 		 (ip-link))
   )
-
 
 (defun phys-iota (&key (txt (iw-dev-raw)))
   "Returns a list of integers for each of the physical-wireless interfaces"
@@ -174,13 +182,27 @@ list and append it to the queue at what is the new top of the stack"
 (defun setup-monitor-command (phys-id)
   (format nil "iw phy phy~a interface add mon~a type monitor && ifconfig mon~a up"
 	  phys-id phys-id phys-id))
-  
+
+(defun phy-supports-monitor? (n)
+  (let ((tree (get-dev nil :key n)))
+    (loop :for n :on tree :do
+	 (optima:match
+	     n
+	   ((list* :modes  (and (type list)
+				mlst) _)
+	    (return-from phy-supports-monitor? (member "monitor" mlst :test #'equal))))
+	 )
+    nil))
+
+
 (defun ensure-monitor!! ()
   "Create a monitor interface on each of the AP links.  We currently brute-force each of the wireless phy interfaces."
   (unless (monitor-exists?)
     (loop :for n :in (phys-iota) :do
-	 (let ((cmd (setup-monitor-command n)))
-	   (inferior-shell:run cmd :on-error nil)
+	 (when (phy-supports-monitor? n)
+	   (let ((cmd (setup-monitor-command n)))
+	     (inferior-shell:run cmd :on-error nil)
+	     )
 	   )
 	 )
     )

@@ -28,20 +28,7 @@
       (with-open-file (s (eazy-process:fd-as-pathname p1 1))
 	(uiop:copy-stream-to-stream s output)))
     )
-       #+nil(let ((path (get-temp-file)))
-    (format t "path ~a~%" path)
-    (let* ((pobj (uiop:launch-program "iw dev" :output path))
-	   (wrv (cffi:foreign-alloc :int :initial-element 0 ))
-	   (pid (uiop:process-info-pid pobj)))
-      (let ((rv (waitpid pid wrv)))
-	(format t "waitpid ~a, pid=~a~%" rv pid))
-      (uiop:wait-process pobj)
-      (format t "reading file~%")
-      (values (uiop:read-file-string path)
-	      path)
-      ))
   )
-
 
 (defun update-queue (stack-o-queues e level-key)
   ;; returns true if we could update the stack-queue with the value

@@ -20,7 +20,7 @@ hw_mode=g
 ## gus - added 2020-03-01
 ieee80211n=1
 wmm_enabled=1
-ht_capab=[HT40][SHORT-GI-20],(if dsss-cck-40 (princ "[DSSS_CCK-40]"))
+ht_capab=[HT40][SHORT-GI-20],(when dsss-cck-40 (princ "[DSSS_CCK-40]"))
 ignore_broadcast_ssid=0
 
 channel=,(princ channel)

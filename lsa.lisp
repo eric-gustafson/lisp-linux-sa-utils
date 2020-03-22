@@ -4,6 +4,14 @@
 
 (named-readtables:in-readtable :interpol-syntax)
 
+(defvar alog-thunk nil)
+
+(defun alog (str)
+  (cond
+    (alog-thunk
+     (funcall alog-thunk str))
+    (print str)))
+
 (defclass link ()
   (
    (name :accessor name :initarg :name :initform "")

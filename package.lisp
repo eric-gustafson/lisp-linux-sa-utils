@@ -5,6 +5,8 @@
   (:use #:cl #:serapeum #:trivia #:trivia.ppcre #:cl-interpol)
   (:export
 
+   :alog-thunk
+   
    :split-into-lines
    :chomp-and-count
    :iw-list-level
@@ -14,6 +16,7 @@
    :ip-link
    :iwconfig-interface-list
    :ip-addr
+   :ifname->dev-num
    
    :hostapd ;; generates hostapd config file
    :hostapd-file

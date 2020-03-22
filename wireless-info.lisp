@@ -110,21 +110,28 @@ list and append it to the queue at what is the new top of the stack"
 
 (defun tree-walker (tree)
   (optima:match
-   tree
-   (() '())
-   ((cons (and (type string)
-	       (optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
-    (let ((num (parse-integer n)))
-      (cons (list :phy num) (tree-walker rest))))
-   ((cons (and (type string)
-	       (optima.ppcre:ppcre "Supported interface modes:")
-	       ) rest)
-    (cons :modes (tree-walker rest)))
-   ((type string)
-    (chomp-and-count tree))
-   ((cons car cdr)
-    (cons (tree-walker car)
-	  (tree-walker cdr))))
+      tree
+    (() '())
+    ;; capabilities
+    ((cons (and (type string)
+		(optima.ppcre:ppcre "Capabilities:\\s+0x(\\x+).*" n)) rest)
+     (let ((num (parse-integer n :radix 16)))
+       (cons (list :capabilities num) (tree-walker rest))))
+    ;; physical dev
+    ((cons (and (type string)
+		(optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
+     (let ((num (parse-integer n)))
+       (cons (list :phy num) (tree-walker rest))))
+    ;; mode
+    ((cons (and (type string)
+		(optima.ppcre:ppcre "Supported interface modes:")
+		) rest)
+     (cons :modes (tree-walker rest)))
+    ((type string)
+     (chomp-and-count tree))
+    ((cons car cdr)
+     (cons (tree-walker car)
+	   (tree-walker cdr))))
   )
 
 (defun chomp-and-count (str)
@@ -207,6 +214,12 @@ device-ids of the system (linux)"
 	 )
     nil))
 
+(defun phys-id-supports-dsss-cck-40 (phys-id)
+  (let ((tree (get-dev nil phys-id)))
+    tree
+    )
+  )
+  
 
 (defun ensure-monitor!! ()
   "Create a monitor interface on each of the AP links.  We currently

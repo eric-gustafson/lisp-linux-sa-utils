@@ -1,15 +1,32 @@
 (in-package #:lsa)
 
+(named-readtables:in-readtable :interpol-syntax)
+
 (defparameter *iw-dev-scanner-splitter* (ppcre:create-scanner "^phy#\\d+:" :multi-line-mode t))
 
 (defvar *wifi-info-buffer* nil)
 
-(defun iw-list-info ()
+(defun iw-list-raw ()
   "memoize the text output from running the iw list linux command"
   (unless
       *wifi-info-buffer*
-    (setf *wifi-info-buffer* (inferior-shell:run/s "iw list")))
+    (setf *wifi-info-buffer*
+	  #+nil(inferior-shell:run/s "iw list")
+	  (let ((p1 (eazy-process:shell `("iw" "list"))))
+	    (with-output-to-string (output)
+	      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
+		(uiop:copy-stream-to-stream s output)))
+	    )))
   *wifi-info-buffer*
+  )
+
+(defun iw-dev-raw ()
+  "return the results of 'iw dev' as a single string"
+  (let ((p1 (eazy-process:shell `("iw" "dev"))))
+    (with-output-to-string (output)
+      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
+	(uiop:copy-stream-to-stream s output)))
+    )
   )
 
 (defun get-temp-file ()
@@ -21,14 +38,7 @@
 
 (cffi:defcfun "waitpid" :int (pid :int) (int :pointer))
 
-(defun iw-dev-raw ()
-  "return the results of 'iw dev' as a single string"
-  (let ((p1 (eazy-process:shell `("iw" "dev"))))
-    (with-output-to-string (output)
-      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
-	(uiop:copy-stream-to-stream s output)))
-    )
-  )
+
 
 (defun update-queue (stack-o-queues e level-key)
   ;; returns true if we could update the stack-queue with the value
@@ -114,9 +124,12 @@ list and append it to the queue at what is the new top of the stack"
     (() '())
     ;; capabilities
     ((cons (and (type string)
-		(optima.ppcre:ppcre "Capabilities:\\s+0x(\\x+).*" n)) rest)
+		(optima.ppcre:ppcre #?"Capabilities:\\s+0x([0-9a-fA-F]+)" n)) rest)
      (let ((num (parse-integer n :radix 16)))
-       (cons (list :capabilities num) (tree-walker rest))))
+       (cons :capabilities (cons num (tree-walker rest)))))
+    ((cons (and (type string)
+		(optima.ppcre:ppcre #?"Band (\\d+)" n)) rest)
+     (cons :band (cons (parse-integer n) (tree-walker rest))))
     ;; physical dev
     ((cons (and (type string)
 		(optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
@@ -132,6 +145,26 @@ list and append it to the queue at what is the new top of the stack"
     ((cons car cdr)
      (cons (tree-walker car)
 	   (tree-walker cdr))))
+  )
+
+(defun iw-dev-tree-walker (tree)
+  (optima:match
+      tree
+    (() '())
+    ((cons (and (type string)
+		(optima.ppcre:ppcre "phy#(\\d+)" n))
+	   rest)
+     (let ((num (parse-integer n)))
+       (cons :phy (cons num (iw-dev-tree-walker rest)))))
+    ((cons (and (type string)
+		(optima.ppcre:ppcre "Interface (\\w+)" iface))
+	   rest)
+     (cons :iface (cons iface (iw-dev-tree-walker rest))))
+    ((type string)
+     (chomp-and-count tree))
+    ((cons car cdr)
+     (cons (iw-dev-tree-walker car)
+	   (iw-dev-tree-walker cdr))))
   )
 
 (defun chomp-and-count (str)
@@ -150,16 +183,21 @@ list and append it to the queue at what is the new top of the stack"
      :collect (multiple-value-list (chomp-and-count l)))
   )
 
-(defun iw-dev-tree (&key (txt (iw-list-info)))
+(defun iw-list-tree (&key (txt (iw-list-raw)))
   (let* ((seq (split-into-lines txt)))
     (tree-walker (seq->tree seq :level-key #'iw-list-level :level-init 0))
+    ))
+
+(defun iw-dev-tree (&key (txt (iw-dev-raw)))
+  (let* ((seq (split-into-lines txt)))
+    (iw-dev-tree-walker (seq->tree seq :level-key #'iw-list-level :level-init 0))
     ))
 
 (defun get-dev (dev-lst &key key )
   "get device-tree by number, if key is nil return the numeric
 device-ids of the system (linux)"
   (unless dev-lst
-    (setf dev-lst (iw-dev-tree)))
+    (setf dev-lst (iw-list-tree)))
   (cond
     ((null key)
      (serapeum:filter-map (optima.extra:lambda-match
@@ -170,7 +208,7 @@ device-ids of the system (linux)"
 	  (match
 	      A
 	    ((list :phy n)
-	     (format t "~a,key=~a,number? ~a~%" n  key (equal key n))
+	     ;;(format t "~a,key=~a,number? ~a~%" n  key (equal key n))
 	     (when (and (numberp n)
 			(equal n key))
 	       (return-from get-dev tree)))))
@@ -214,12 +252,64 @@ device-ids of the system (linux)"
 	 )
     nil))
 
-(defun phys-id-supports-dsss-cck-40 (phys-id)
-  (let ((tree (get-dev nil phys-id)))
-    tree
+(defun extract-band-info (dev-tree)
+  "returns a list of subtrees, one for each band"
+  ;; :band num subtree
+  (serapeum:collecting
+    (loop :for p :on dev-tree :do
+	 (optima:match
+	     p
+	   ((list* :band (and (type number)
+			      num)
+		   (and (type list)
+			subtree)
+		   _)
+	    (collect (cons num subtree)))))
     )
   )
-  
+
+(defun extract-capabilities-from-band-info (band-info)
+  (loop :for p :on band-info :do
+       (optima:match
+	   p
+	 ((list* :capabilities
+		 (type number)
+		 (and (type list)
+		      cap-list)
+		 _)
+	  (return-from extract-capabilities-from-band-info cap-list))))
+  nil)
+
+(defun phys-id-supports-dsss-cck-40? (phys-id)
+  (let ((tree (get-dev nil :key phys-id)))
+    (member "DSSS/CCK HT40"
+	    (remove-duplicates 
+	     (apply #'append (mapcar #'extract-capabilities-from-band-info
+				     (extract-band-info tree)))
+	     :test #'equal
+	     )
+	    )
+    )
+  )
+
+(defun ifname->dev-num (ifname)
+  "maps the interface name to a wifi device-number"
+  (let ((iw-dev-tree (iw-dev-tree))
+	(phy-num nil))
+    (loop :for p :on iw-dev-tree :do
+	 (optima:match
+	     p
+	   ((list* :phy (and (type number)
+			     num) _)
+	    (setf phy-num num))
+	   ((list* (list* :iface (and (type string)
+				      ifn) _) _)
+	    (if (equal ifn ifname)
+		(return-from ifname->dev-num phy-num))))
+	 )
+    )
+  nil
+  )
 
 (defun ensure-monitor!! ()
   "Create a monitor interface on each of the AP links.  We currently
@@ -232,5 +322,35 @@ brute-force each of the wireless phy interfaces."
 	     )
 	   )
 	 )
+    )
+  )
+
+(defun hostapd-file ()
+  "/etc/hostapd/hostapd.conf")
+
+
+(defun setup-hostapd (&key ifname ssid channel pw)
+  ;; map ifname to dev-number
+  (serapeum:and-let*
+      ( ;; bad hack to move things along
+       (filename (hostapd-file))
+       (pathname (pathname filename))
+       )
+    (uiop:ensure-all-directories-exist (list pathname))
+    (with-open-file
+	(out  pathname
+	      :direction :output
+	      ;;:element-type :utf-8 ;;'(unsigned-byte 8)
+	      :if-exists :supersede
+	      :if-does-not-exist :create)
+      (princ
+       (lsa:hostapd ifname
+		    ssid
+		    pw
+		    :channel  channel
+		    :dsss-cck-40 (ifname->dev-num ifname)
+		    )
+       out)
+      )
     )
   )

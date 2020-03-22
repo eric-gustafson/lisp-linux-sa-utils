@@ -3,7 +3,7 @@
 
 (stringhere:enable-txt-syntax)	  
  
-(defun hostapd (iface ssid passphrase &key (channel 1))
+(defun hostapd (iface ssid passphrase &key (channel 1) dsss-cck-40)
   (declare (type (string iface)))
   (let ((output
 	 (with-output-to-string (*standard-output*)
@@ -20,7 +20,7 @@ hw_mode=g
 ## gus - added 2020-03-01
 ieee80211n=1
 wmm_enabled=1
-ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+ht_capab=[HT40][SHORT-GI-20],(if dsss-cck-40 (princ "[DSSS_CCK-40]"))
 ignore_broadcast_ssid=0
 
 channel=,(princ channel)

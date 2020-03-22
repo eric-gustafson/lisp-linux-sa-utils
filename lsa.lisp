@@ -2,6 +2,8 @@
 
 (in-package #:lsa)
 
+(named-readtables:in-readtable :interpol-syntax)
+
 (defclass link ()
   (
    (name :accessor name :initarg :name :initform "")

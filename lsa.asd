@@ -8,6 +8,7 @@
   :serial t
   :depends-on (
 	       #:serapeum
+	       #:cl-interpol
 	       #:uiop
 	       #:trivia
 	       #:trivia.ppcre

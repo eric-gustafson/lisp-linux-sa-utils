@@ -1,18 +1,6 @@
 #+title: Short Term TODO's and babel scratch pad
 #+author: eric gustafson
 #+startup: overview
-
-
-* TODO algo1
-  get list of network interfaces or seed it.
-  
-  filter out wired ones
-
-  find the target interface
-
-  generate hostapd and fork/exec
-
-  setup interface
   
 
 * TODO udev info
@@ -95,13 +83,16 @@ wlo1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 #+end_example
 
+* DONE get wireless information
+* DONE algo1
+  get list of network interfaces or seed it.
+  
+  filter out wired ones
 
+  find the target interface
 
+  generate hostapd and fork/exec
 
-
-
-
-
-** TODO get wireless information
+  setup interface
 
 

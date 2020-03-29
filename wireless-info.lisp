@@ -24,8 +24,14 @@
   "return the results of 'iw dev' as a single string"
   (let ((p1 (eazy-process:shell `("iw" "dev"))))
     (with-output-to-string (output)
-      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
-	(uiop:copy-stream-to-stream s output)))
+      (let ((pname (eazy-process:fd-as-pathname p1 1)))
+	(format t "~a" (uiop:directory-files pname))
+	(with-open-file (s pname
+			   :if-does-not-exist :create
+			   :if-exists :supersede
+			   )
+	  (uiop:copy-stream-to-stream s output)))
+      )
     )
   )
 

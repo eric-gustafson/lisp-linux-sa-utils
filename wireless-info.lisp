@@ -23,15 +23,7 @@
 (defun iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
   (let ((p1 (eazy-process:shell `("iw" "dev"))))
-    (with-output-to-string (output)
-      (let ((pname (eazy-process:fd-as-pathname p1 1)))
-	(format t "~a" (uiop:directory-files pname))
-	(with-open-file (s pname
-			   :if-does-not-exist :create
-			   :if-exists :supersede
-			   )
-	  (uiop:copy-stream-to-stream s output)))
-      )
+    (eazy-process:fd-output-as-string p1 1)
     )
   )
 

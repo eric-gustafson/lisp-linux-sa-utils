@@ -13,9 +13,7 @@
     (setf *wifi-info-buffer*
 	  #+nil(inferior-shell:run/s "iw list")
 	  (let ((p1 (eazy-process:shell `("iw" "list"))))
-	    (with-output-to-string (output)
-	      (with-open-file (s (eazy-process:fd-as-pathname p1 1))
-		(uiop:copy-stream-to-stream s output)))
+	    (eazy-process:fd-output-as-string p1 1)
 	    )))
   *wifi-info-buffer*
   )
@@ -347,7 +345,7 @@ brute-force each of the wireless phy interfaces."
 		    ssid
 		    pw
 		    :channel  channel
-		    :dsss-cck-40 (ifname->dev-num ifname)
+		    :dsss-cck-40 (phys-id-supports-dsss-cck-40? (ifname->dev-num ifname))
 		    )
        out)
       )

@@ -25,5 +25,6 @@
 	       (:file "wireless-info")
 	       (:file "hostapd")
 	       (:file "tree")
+	       (:file "git")
 	       )
   )

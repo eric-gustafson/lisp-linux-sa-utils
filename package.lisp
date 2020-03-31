@@ -49,6 +49,8 @@
    :hwtype
    
    :/sys->link-obj
+
+   :update-all
    
    )
   )

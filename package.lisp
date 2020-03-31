@@ -50,7 +50,7 @@
    
    :/sys->link-obj
 
-   :update-all
+   :git-update-all
    
    )
   )

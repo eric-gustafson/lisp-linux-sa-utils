@@ -13,6 +13,7 @@
    
    :iw-dev-raw
    :iw-dev-simple
+   :iw-list-tree
    :ip-link
    :iwconfig-interface-list
    :ip-addr

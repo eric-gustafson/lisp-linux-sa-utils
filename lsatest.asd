@@ -17,7 +17,7 @@
 	       #:fiasco
 	       #:trivia
 	       #:trivia.ppcre
-	       #:inferior-shell
+	       #:eazy-process
 	       #:numex
 	       #:lsa
                #:cl-ppcre

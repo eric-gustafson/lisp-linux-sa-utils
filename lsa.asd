@@ -14,7 +14,7 @@
 	       #:trivia.ppcre
 	       #:optima
 	       #:optima.ppcre
-	       #:inferior-shell
+	       ;;#:inferior-shell
 	       #:stringhere
 	       #:numex
 	       #:cffi

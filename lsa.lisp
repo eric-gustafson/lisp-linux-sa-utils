@@ -189,13 +189,13 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   (handler-case
       (progn
 	(incf *vlan-id*)
-	(inferior-shell:run (format nil "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*) :on-error nil)
+	(eazy-process:is-run (format nil "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*) :on-error nil)
 	(loop 
 	   :for i from 1 upto 10 
-	   :for (str _ xit-code) = (multiple-value-list (inferior-shell:run (format nil "/sbin/ip link show ~a.~a" pif *vlan-id*)  :on-error nil))
+	   :for (str _ xit-code) = (multiple-value-list (eazy-process:is-run (format nil "/sbin/ip link show ~a.~a" pif *vlan-id*)  :on-error nil))
 	   :until (eq xit-code 0)
 	   :do (print i))
-	(inferior-shell:run (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*) :on-error nil)
+	(eazy-process:is-run (format nil "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*) :on-error nil)
 	*vlan-id*
 	)
     (t (c)
@@ -206,7 +206,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 (defun up-vlan (id)
   (handler-case
-      (inferior-shell:run/s (format nil "/sbin/ip link set dev wlan.~a up" *vland-id*))
+      (eazy-process:is-run (format nil "/sbin/ip link set dev wlan.~a up" *vland-id*))
     (t (c)
       (format t "We caught a condition.~&")
       (values nil c))
@@ -216,8 +216,8 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defun del-vlan (id)
   (handler-case
       (progn
-	(inferior-shell:run/s (format nil "/sbin/ip link set dev wlan0.~a down" id))
-	(inferior-shell:run/s (format nil "/sbin/ip link delete wlan0.~a" id))
+	(eazy-process:is-run (format nil "/sbin/ip link set dev wlan0.~a down" id))
+	(eazy-process:is-run (format nil "/sbin/ip link delete wlan0.~a" id))
 	)
     (t (c)
       (format t "We caught a condition.~&")
@@ -227,7 +227,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 (defmacro shell-run/s (fmtstr &rest args)
   `(handler-case
-       (inferior-shell:run/s (format nil ,fmtstr ,@args))
+       (eazy-process:is-run (format nil ,fmtstr ,@args))
      (t (c)
        (format t "shell-error:~a~&" c)
        (values nil c)
@@ -251,7 +251,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 	#+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
 	#+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
 	;; Drop all traffic to this device by default.
-	(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
+	(eazy-process:is-run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
 	)
     (t (c)
       (format t "~a: condition.~a~&" :disable-xtalk c)
@@ -261,11 +261,11 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 
 (defun ip-link ()
-  (common-splitter (inferior-shell:run/s "/sbin/ip link"))
+  (common-splitter (eazy-process:exec `("/sbin/ip" "link")))
   )
 
 (defun ip-addr ()
-  (common-splitter (inferior-shell:run/s "/sbin/ip addr")))
+  (common-splitter (eazy-process:exec `("/sbin/ip" "addr"))))
 
 (defun ip-addr-objs ()
   (serapeum:filter-map
@@ -390,7 +390,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   
 (defun iwconfig-interface-list ()
   (let ((results '()))
-    (loop :for line :in (inferior-shell:run/lines "iwconfig")
+    (loop :for line :in (ppcre:split "(\\n|\\r)" (eazy-process:exec `("iwconfig")))
        :do
        (trivia:multiple-value-match
 	   (ppcre:scan-to-strings "^(\\w+)\\s.*" line)

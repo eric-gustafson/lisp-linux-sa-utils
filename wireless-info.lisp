@@ -314,7 +314,7 @@ brute-force each of the wireless phy interfaces."
     (loop :for n :in (phys-iota) :do
 	 (when (phy-supports-monitor? n)
 	   (let ((cmd (setup-monitor-command n)))
-	     (inferior-shell:run cmd :on-error nil)
+	     (eazy-process:is-run cmd)
 	     )
 	   )
 	 )

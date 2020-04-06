@@ -17,13 +17,14 @@
    :ip-link
    :iwconfig-interface-list
    :ip-addr
-   :ifname->dev-num
+   :ifname->wireless-dev-num
    
    :hostapd ;; generates hostapd config file
    :hostapd-file
    :setup-hostapd
 
    :wifi-info
+   :netdev-type
    :seq->tree
    
    :raspberry-pi?

@@ -288,7 +288,7 @@ device-ids of the system (linux)"
     )
   )
 
-(defun ifname->dev-num (ifname)
+(defun ifname->wireless-dev-num (ifname)
   "maps the interface name to a wifi device-number"
   (let ((iw-dev-tree (iw-dev-tree))
 	(phy-num nil))
@@ -301,12 +301,28 @@ device-ids of the system (linux)"
 	   ((list* (list* :iface (and (type string)
 				      ifn) _) _)
 	    (if (equal ifn ifname)
-		(return-from ifname->dev-num phy-num))))
+		(return-from ifname->wireless-dev-num phy-num))))
 	 )
     )
   nil
   )
 
+
+(defun netdev-type (iface-name)
+  "Correlates iw phy and ip link information to determine the type of
+network device this iface name is.  We currently return either (nil
+:lo :wlan :eth)"
+  (when (assoc iface-name (ip-link) :test #'equal)
+    (when (ifname->wireless-dev-num iface-name) 
+      (return-from netdev-type :wlan))
+    (let ((link-obj
+	   (find iface-name (lsa:ip-link-objs) :test #'equal :key #'name)))
+      (when (search "loop" (ltype link-obj))
+	(return-from netdev-type :lo))
+      (when (search "eth" (ltype link-obj))
+	(return-from netdev-type :eth))))
+  )
+  
 (defun ensure-monitor!! ()
   "Create a monitor interface on each of the AP links.  We currently
 brute-force each of the wireless phy interfaces."
@@ -345,7 +361,7 @@ brute-force each of the wireless phy interfaces."
 		    ssid
 		    pw
 		    :channel  channel
-		    :dsss-cck-40 (phys-id-supports-dsss-cck-40? (ifname->dev-num ifname))
+		    :dsss-cck-40 (phys-id-supports-dsss-cck-40? (ifname->wireless-dev-num ifname))
 		    )
        out)
       )

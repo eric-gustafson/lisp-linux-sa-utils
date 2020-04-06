@@ -312,6 +312,7 @@ device-ids of the system (linux)"
   "Correlates iw phy and ip link information to determine the type of
 network device this iface name is.  We currently return either (nil
 :lo :wlan :eth)"
+  (declare (type string iface-name))
   (when (assoc iface-name (ip-link) :test #'equal)
     (when (ifname->wireless-dev-num iface-name) 
       (return-from netdev-type :wlan))

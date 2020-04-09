@@ -307,21 +307,29 @@ device-ids of the system (linux)"
   nil
   )
 
-
-(defun netdev-type (iface-name)
-  "Correlates iw phy and ip link information to determine the type of
+(defgeneric netdev-type (obj)
+  (:documentation "Correlates iw phy and ip link information to determine the type of
 network device this iface name is.  We currently return either (nil
-:lo :wlan :eth)"
-  (declare (type string iface-name))
-  (when (assoc iface-name (ip-link) :test #'equal)
-    (when (ifname->wireless-dev-num iface-name) 
-      (return-from netdev-type :wlan))
-    (let ((link-obj
-	   (find iface-name (lsa:ip-link-objs) :test #'equal :key #'name)))
-      (when (search "loop" (ltype link-obj))
-	(return-from netdev-type :lo))
-      (when (search "eth" (ltype link-obj))
-	(return-from netdev-type :eth))))
+:lo :wlan :eth)"))
+
+
+(defmethod netdev-type ((obj string))
+  (declare (type string obj))
+  (let ((iface-name obj))
+    (when (assoc iface-name (ip-link) :test #'equal)
+      (when (ifname->wireless-dev-num iface-name) 
+	(return-from netdev-type :wlan))
+      (let ((link-obj
+	     (find iface-name (lsa:ip-link-objs) :test #'equal :key #'name)))
+	(when (search "loop" (ltype link-obj))
+	  (return-from netdev-type :lo))
+	(when (search "eth" (ltype link-obj))
+	  (return-from netdev-type :eth))))
+    ))
+
+(defmethod netdev-type ((obj link))
+  (let ((iface-name (name obj)))
+    (netdev-type iface-name))
   )
   
 (defun ensure-monitor!! ()

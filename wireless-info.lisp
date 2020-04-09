@@ -289,22 +289,26 @@ device-ids of the system (linux)"
   )
 
 (defun ifname->wireless-dev-num (ifname)
-  "maps the interface name to a wifi device-number"
-  (let ((iw-dev-tree (iw-dev-tree))
-	(phy-num nil))
-    (loop :for p :on iw-dev-tree :do
-	 (optima:match
-	     p
-	   ((list* :phy (and (type number)
-			     num) _)
-	    (setf phy-num num))
-	   ((list* (list* :iface (and (type string)
-				      ifn) _) _)
-	    (if (equal ifn ifname)
-		(return-from ifname->wireless-dev-num phy-num))))
-	 )
-    )
-  nil
+  "Searches through the results of the 'iw dev' command, returning the
+OS's physical id number for the interface's name(ifname)."
+  (let ((iw-dev-tree (iw-dev-tree)))
+    (labels ((dev-search (node phy-num)
+	       (optima:match
+		   node
+		 ((list* :phy (and (type number)
+				   num) rest)
+		  (dev-search rest num) ;; change the physical number
+		  )
+		 ((list* :iface (and (type string)
+				     ifn) rest)
+		  (if (equal ifn ifname)
+		      (return-from ifname->wireless-dev-num phy-num)
+		      (dev-search rest phy-num)))
+		 ((cons first rest)
+		  (dev-search first phy-num)
+		  (dev-search rest phy-num))
+		 )))
+      (dev-search iw-dev-tree nil)))
   )
 
 (defgeneric netdev-type (obj)

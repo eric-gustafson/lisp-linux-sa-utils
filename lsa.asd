@@ -14,6 +14,8 @@
 	       #:trivia.ppcre
 	       #:optima
 	       #:optima.ppcre
+	       #:fare-quasiquote-optima
+	       #:fare-quasiquote-readtable
 	       ;;#:inferior-shell
 	       #:stringhere
 	       #:numex

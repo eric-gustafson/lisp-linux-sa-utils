@@ -90,6 +90,7 @@
 (defclass ip-addr (link)
   (
    (addr :accessor addr :initarg :addr :initform nil)
+   (netmask :accessor netmask :initarg :netmask :initform nil)
    )
   )
 
@@ -141,10 +142,10 @@
   (print-unreadable-object
       (obj stream :type t)
     (with-slots
-	  (name mtu qdisk state mode group mac ltype broadcast addr)
+	  (name mtu qdisk state mode group mac ltype broadcast addr netmask)
 	obj
-      (format stream "~a,~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a"
-	      name addr mtu qdisk state mode group
+      (format stream "~a,~a/~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a"
+	      name addr netmask mtu qdisk state mode group
 	      mac ltype broadcast
 	      ))
     )
@@ -281,12 +282,16 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
        "brd" _
        "inet" ip/cidr
        rest)
-      (make-instance 'ip-addr
-		     :name if
-		     :state state
-		     :ltype type
-		     :mac mac
-		     :addr ip/cidr)))
+      (trivia:match
+	  (ppcre:split "/" ip/cidr)
+	((list ip nmask)
+	 (make-instance 'ip-addr
+			:name if
+			:state state
+			:ltype type
+			:mac mac
+			:addr ip
+			:netmask nmask)))))
    (ip-addr)))
 
 (defun ip-link-objs ()

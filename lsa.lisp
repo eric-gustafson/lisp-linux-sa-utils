@@ -22,9 +22,14 @@
    (mode :accessor mode :initarg :mode :initform "")
    (group :accessor group :initarg :group :initform "")
    (mac :accessor mac :initarg :mac :initform "")
-   (addr-len :accessor addr-len :initarg :addr-len :initform nil)xo
+   (addr-len :accessor addr-len :initarg :addr-len :initform nil)
    (ltype :accessor ltype :initarg :ltype :initform "")
-   (hwtype :accessor hwtype :initarg :hwtype :initform nil :documentation "the hardware type which is found in the /proc file system and is given as part of the dhcp/bootp hw type ")
+   (hwtype :accessor hwtype
+	   :initarg :hwtype
+	   :initform nil
+	   :documentation "the hardware type which is found in the
+	   /proc file system and is given as part of the dhcp/bootp hw
+	   type ")
    (broadcast :accessor broadcast :initarg :broadcast :initform "")
    ;; (:accessor :initarg :initform)
    )
@@ -404,8 +409,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
     results))
 
 
-
-(defmethod add-route ( (target link) (via link) )
+(defmethod add-route ( (target ip-addr) (via ip-addr) )
   (eazy-process:exec `("ip" "route" "add" "172.16.5.0/24" "via" "10.0.0.101" "dev" "eth0"))
   )
 

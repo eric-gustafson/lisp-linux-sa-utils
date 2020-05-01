@@ -4,6 +4,7 @@
 
 (named-readtables:in-readtable :interpol-syntax)
 
+
 (defvar alog-thunk nil)
 
 (defun alog (str)

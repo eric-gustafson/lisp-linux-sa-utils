@@ -24,6 +24,7 @@
 	       )
   :components ((:file "package")
                (:file "lsa")
+	       (:file "routing")
 	       (:file "wireless-info")
 	       (:file "hostapd")
 	       (:file "git")

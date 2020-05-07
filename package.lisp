@@ -30,10 +30,6 @@
    :raspberry-pi?
    :ensure-monitor!!
    
-   :link
-   :name :mtu :qdisk :state :mode :group :mac :ltype :broadcast
-   :addr
-
    :disable-xtalk
    :add-vlan
    :del-vlan
@@ -42,11 +38,8 @@
    :del-addr
 
    ;; link object
-   :name
    :path
-   :mac
-   :addr-len
-   :hwtype
+
    
    :/sys->link-obj
 

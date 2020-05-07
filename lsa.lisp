@@ -36,6 +36,8 @@
    )
   )
 
+(export '(link name mtu qdisk state mode group mac addr-len ltype hwtype broadcast))
+
 (defun machine-info-model ()
   (loop :for e :in (uiop:read-file-lines #P"/proc/cpuinfo")
      :if (ppcre:scan "Model" e) :do
@@ -99,6 +101,8 @@
    (netmask :accessor netmask :initarg :netmask :initform nil)
    )
   )
+
+(export `(addr netmask))
 
 (defparameter *extractor-methods* '())
 
@@ -274,7 +278,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defun ip-addr ()
   (common-splitter (eazy-process:exec `("/sbin/ip" "addr"))))
 
-(defun ip-addr-objs ()
+(defun ip-addr-from-text-list (text-lst)
   (serapeum:filter-map
    (trivia:lambda-match
      ((list*
@@ -297,8 +301,34 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 			:ltype type
 			:mac mac
 			:addr ip
-			:netmask nmask)))))
-   (ip-addr)))
+			:netmask nmask))))
+     ((list*
+       if _
+       "mtu" _
+       "qdisc" _
+       "state" state
+       "group" _
+       "qlen" _
+       type mac
+       "brd" _
+       ;;"inet" ip/cidr
+       rest)
+      (make-instance 'ip-addr
+		     :name if
+		     :state state
+		     :ltype type
+		     :mac mac
+		     :addr nil
+		     :netmask nil))
+      
+     )
+   text-lst))
+(export 'ip-addr-from-text-list)
+
+
+(defun ip-addr-objs ()
+  (ip-addr-from-text-list (ip-addr))
+  )
 
 (defun ip-link-objs ()
   (let ((links (ip-link)))

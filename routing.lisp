@@ -34,5 +34,6 @@
     )
   )
 
-(export '(ip-routes ip-default-route delete-default-route!! 'route-add-default-gw!!)
+(export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!!))
+
 

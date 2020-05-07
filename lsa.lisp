@@ -134,11 +134,11 @@
   (print-unreadable-object
       (obj stream :type t)
     (with-slots
-	  (name mtu qdisk state mode group mac ltype broadcast)
+	  (name mtu qdisk state mode group mac ltype broadcast hwtype)
 	obj
-      (format stream "~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a"
+      (format stream "~a,~a,~a,state=~a,mode=~a,group=~a,~a,~a,~a,hwtype=~a"
 	      name mtu qdisk state mode group
-	      mac ltype broadcast
+	      mac ltype broadcast hwtype
 	      ))
     )
   )
@@ -320,6 +320,9 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 	 ))
     )
   )
+
+(export '(ip-addr-objs ip-link-objs))
+
 	    
 (defparameter *if-scanner-splitter* (ppcre:create-scanner "^\\d+:" :multi-line-mode t))
 (defparameter *if-scanner* (ppcre:create-scanner "^\\d+:\\s+([^:]+):" :multi-line-mode t))

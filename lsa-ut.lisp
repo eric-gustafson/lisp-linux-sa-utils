@@ -62,8 +62,20 @@
       (t
        (fiasco:skip)))))
 
-      
-      
+(fiasco:deftest envtest ()
+  (multiple-value-bind (ouid ogid)
+      (lsa:get-uginfo)
+    (cond
+      ((eq ouid 0)  
+       (lsa:as-user
+	   "egustafs"
+	 (fiasco:is (equalp (uiop:getenv "USER") "egustafs")))
+       (fiasco:is (equalp (uiop:getenv "USER") "root")))
+      (t
+       (fiasco:skip)))
+    )
+  )
+
 
 (fiasco:deftest asusr ()
   ;; When run as-root, create a file as 

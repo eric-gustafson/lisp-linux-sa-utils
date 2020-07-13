@@ -448,3 +448,9 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   )
 
 
+
+
+
+
+(export 'asusr*)
+

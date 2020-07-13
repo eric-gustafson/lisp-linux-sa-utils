@@ -45,3 +45,49 @@
 (fiasco:deftest strings()
   (seq->tree tseq-iw-dev :level-key #'lsa:iw-list-level :level-init 0)
   )
+
+;; Todo:  Add and delete a test user for these tests, as part of the tests
+;;
+
+(fiasco:deftest uid ()
+  (multiple-value-bind (ouid ogid)
+      (lsa:get-uginfo)
+    (cond
+      ((eq ouid 0)
+       (lsa:as-user* "egustafs"
+		     #'(lambda()
+			 (format t "~a~%" (multiple-value-list (lsa:get-uginfo))))
+		     )
+       )
+      (t
+       (fiasco:skip)))))
+
+      
+      
+
+(fiasco:deftest asusr ()
+  ;; When run as-root, create a file as 
+  (multiple-value-bind (ouid ogid)
+      (lsa:get-uginfo)
+    (cond
+      ((eq ouid 0)
+       (multiple-value-bind (file euid egid)
+	   (lsa:as-user "egustafs"
+	     (uiop/stream:with-temporary-file (:stream out
+					       :pathname where
+					       :keep t
+					       )
+	       (format out "this is a test~%")
+	       (values where (iolib/syscalls:geteuid) (iolib/syscalls:getegid))))
+	 (declare (ignorable file euid egid))
+	 ;;(format t "temp file:~a~%" file)
+	 (fiasco:is (probe-file file))
+	 (let ((statObj (iolib/syscalls:stat (format nil "~a" (probe-file file)))))
+	   (fiasco:is euid (iolib/syscalls:stat-uid statObj)))
+	 )
+       )
+      (t
+       (fiasco:skip))
+      )
+    )
+  )

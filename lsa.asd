@@ -16,11 +16,11 @@
 	       #:optima.ppcre
 	       #:fare-quasiquote-optima
 	       #:fare-quasiquote-readtable
-	       ;;#:inferior-shell
 	       #:stringhere
 	       #:numex
 	       #:cffi
-	       #:eazy-process 
+	       #:iolib
+	       #:eazy-process
 	       )
   :components ((:file "package")
                (:file "lsa")
@@ -28,5 +28,6 @@
 	       (:file "wireless-info")
 	       (:file "hostapd")
 	       (:file "git")
+	       (:file "users")
 	       )
   )

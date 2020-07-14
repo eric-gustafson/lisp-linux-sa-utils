@@ -96,6 +96,8 @@
 	 (fiasco:is (probe-file file))
 	 (let ((statObj (iolib/syscalls:stat (format nil "~a" (probe-file file)))))
 	   (fiasco:is euid (iolib/syscalls:stat-uid statObj)))
+	 ;; Make sure this process is back to normal
+	 (fiasco:is (eq (iolib/syscalls:getuid) 0))
 	 )
        )
       (t

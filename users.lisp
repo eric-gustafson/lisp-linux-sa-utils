@@ -32,7 +32,7 @@
 (export 'env-alist)			   
 
 (defun alist->env (env-alst &key clearenv)
-  "Replace the current env with alst"
+  "Replace the current env with alst.  If clearenv is true, then clear the environment before setting"
   (when clearenv (iolib/syscalls:clearenv))
   (loop :for (n . v) :in env-alst :do
     (iolib/syscalls:setenv n v t))
@@ -60,8 +60,7 @@ unwind-protects back to the original uid and gid."
       (multiple-value-bind (name x uid gid desc home shell)
 	  (iolib/syscalls:getpwnam user-name-as-str)
 	(declare (ignorable name x uid gid desc home shell))
-	(unless (stringp name)
-	  (error "user ~a not found" user-name-as-str))
+	(unless (stringp name) (error "user ~a not found" user-name-as-str))
 	(iolib/syscalls:setenv "USER" name t)
 	(iolib/syscalls:setenv "HOME" home t)
 	(iolib/syscalls:setenv "SHELL" shell t)

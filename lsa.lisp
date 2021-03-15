@@ -276,6 +276,8 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   )
 
 (defun ip-addr ()
+  "An uncached result.  Run's common-splitter over top of the command
+'ip addr'"
   (common-splitter (eazy-process:exec `("/sbin/ip" "addr"))))
 
 (defun ip-addr-from-text-list (text-lst)
@@ -358,6 +360,9 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defparameter *if-scanner* (ppcre:create-scanner "^\\d+:\\s+([^:]+):" :multi-line-mode t))
 (defparameter *ip-addr-scanner* (ppcre:create-scanner ".*inet\\s+(\\d+\\.\\d+\\.\\d+\\.\\d+)/(\\d+)" :multi-line-mode t))
 (defparameter *mac-addr-scanner* (ppcre:create-scanner ".*link/\\w+\\s+(\\S+)" :multi-line-mode t))
+
+
+(export '*ip-addr-scanner*)
 
 (defun extract-if (buff &key (start 0))
   "returns 2 values, the interface and the offset into the buffer or nil if nothing found"

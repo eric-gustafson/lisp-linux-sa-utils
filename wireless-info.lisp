@@ -10,19 +10,19 @@
   "memoize the text output from running the iw list linux command"
   (unless
       *wifi-info-buffer*
-    (setf *wifi-info-buffer*
-	  #+nil(inferior-shell:run/s "iw list")
-	  (let ((p1 (eazy-process:shell `("iw" "list"))))
-	    (eazy-process:fd-output-as-string p1 1)
-	    )))
+    (multiple-value-bind (out err xit-code)
+	(uiop-shell:run/s "iw list")
+      (declare (ignorable err xit-code))      
+      (setf *wifi-info-buffer* out)))
   *wifi-info-buffer*
   )
 
 (defun iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
-  (let ((p1 (eazy-process:shell `("iw" "dev"))))
-    (eazy-process:fd-output-as-string p1 1)
-    )
+  (multiple-value-bind (out err xit-code)
+      (uiop-shell:run/s "iw dev")
+    (declare (ignorable err xit-code))
+    out)
   )
 
 (defun get-temp-file ()
@@ -343,7 +343,7 @@ brute-force each of the wireless phy interfaces."
     (loop :for n :in (phys-iota) :do
 	 (when (phy-supports-monitor? n)
 	   (let ((cmd (setup-monitor-command n)))
-	     (eazy-process:is-run cmd)
+	     (uiop-shell:run/s cmd)
 	     )
 	   )
 	 )

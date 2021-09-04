@@ -17,7 +17,6 @@
 	       #:fiasco
 	       #:trivia
 	       #:trivia.ppcre
-	       #:eazy-process
 	       #:numex
 	       #:lsa
                #:cl-ppcre

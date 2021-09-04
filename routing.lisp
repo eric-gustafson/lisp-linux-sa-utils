@@ -5,7 +5,8 @@
 (defun ip-routes ()
   "Calls the linux command ip route show"
   (multiple-value-bind (output-str error-str exit-status)
-      (eazy-process:exec '("ip" "route" "show"))
+      (uiop-shell:run/s "ip route show")
+    (declare (ignorable error-str exit-status))
     (loop :for line :in (serapeum:lines output-str) :collect line)
     ))
 
@@ -19,19 +20,13 @@
 (defun delete-default-route!! ()
   (let ((default-route (serapeum:tokens (ip-default-route))))
     (when default-route
-      (eazy-process:exec (nconc
-			  '("ip" "route" "delete" )
-			  default-route))
+      (uiop-shell:run/s "ip route delete ~a" default-route)
       )
     )
   )
-    
-
 
 (defun route-add-default-gw!! (cidr-net gateway-ip)
-  (multiple-value-bind (output-str error-str xit-status)
-      (eazy-process:exec `("ip" "route" "add" ,cidr-net "via" ,gateway-ip))
-    )
+  (uiop-shell:run/s "ip route add ~a via ~a" cidr-net gateway-ip)
   )
 
 (export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!!))

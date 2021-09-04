@@ -1,3 +1,3 @@
 (fiasco:define-test-package #:lsatest
-    (:use #:cl #:lsa #:serapeum)
+  (:use #:cl #:lsa #:serapeum)
   )

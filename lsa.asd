@@ -20,7 +20,7 @@
 	       #:numex
 	       #:cffi
 	       #:iolib
-	       #:eazy-process
+	       #:uiop-shell
 	       )
   :components ((:file "package")
                (:file "lsa")

@@ -1,0 +1,32 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(#:staple #:staple-markdown #:LSA) :silent t)
+  )
+      
+(defclass my-page (staple:simple-page) ())
+(defmethod staple:page-type ((system (eql (asdf:find-system (quote :lsa)))))
+  'my-page)
+
+(defmethod staple:compile-source ((document pathname) (page my-page))
+  (staple:compile-source document :markdown))
+
+(defmethod staple:format-documentation ((docstring string) (page my-page))
+  (let ((*package* (first (staple:packages page))))
+    (staple:markup-code-snippets-ignoring-errors
+     (staple:compile-source docstring :markdown))))
+
+		
+	  
+	  
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (format t "Generating documentation for ~a.~%" (quote :lsa))
+  (staple:generate (quote :lsa) :if-exists :supersede :output-directory (uiop:getcwd))
+  )
+;;; vim: set ft=lisp lisp:
+

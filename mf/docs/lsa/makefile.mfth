@@ -1,0 +1,8 @@
+
+LISP_FILES=$(wildcard ../../*.lisp)
+
+docs/index-txt.html: gendocs 
+	./gendocs
+    
+gendocs: gendocs.ros $(LISP_FILES)
+	ros -Q build $<

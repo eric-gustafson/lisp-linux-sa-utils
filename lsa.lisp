@@ -229,7 +229,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   )
 
 (defun add-addr (pif ip cidr-block)
-  (shell-run/s "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
+  (uiop-shell:run/s "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
   )
 
 

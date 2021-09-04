@@ -5,7 +5,7 @@
 
 (defun git-update-all ()
   "Does a git pull with --recurse-submodules and update --remote.  Brings all submodules up to date"
-  #+nil(eazy-process:exec `("git" "pull"))g
+  #+nil(eazy-process:exec `("git" "pull"))
   ;(uiop-shell:lshm "git pull --recurse-submodules && git submodule update --remote")
   (uiop-shell:&& `("git pull --recurse-submodules")
 		 `("git submodule update --remote"))

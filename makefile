@@ -7,4 +7,4 @@ ut: ut.ros $(LISP_FILES)
 
 clean:
 	- rm ut
-	- rm mf/ut/lsa
+	- rm mf/ut/lsa/ut

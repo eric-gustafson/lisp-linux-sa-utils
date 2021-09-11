@@ -3,8 +3,7 @@
 
 (stringhere:enable-txt-syntax)	  
  
-(defun hostapd (iface ssid passphrase &key (channel 1) dsss-cck-40 (hw-mode
-								    ;;"g"
+(defun hostapd (iface ssid passphrase &key (channel 0) dsss-cck-40 (hw-mode
 								    "a"
 								    ))
   (declare (type (string iface)))

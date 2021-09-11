@@ -22,6 +22,8 @@ hw_mode=,(princ hw-mode)
 
 ## gus - added 2020-03-01
 ieee80211n=1
+(if (eq hw-mode #\a) (princ "ieee80211n=1          # 802.11n support"))
+ieee80211d=1          # limit the frequencies used to those allowed in the country
 wmm_enabled=1
 ht_capab=[HT40][SHORT-GI-20],(when dsss-cck-40 (princ "[DSSS_CCK-40]"))
 ignore_broadcast_ssid=0

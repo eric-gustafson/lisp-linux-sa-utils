@@ -3,7 +3,7 @@
 
 (stringhere:enable-txt-syntax)	  
  
-(defun hostapd (iface ssid passphrase &key (channel 1) dsss-cck-40)
+(defun hostapd (iface ssid passphrase &key (channel 1) dsss-cck-40 (hw-mode "g"))
   (declare (type (string iface)))
   (let ((output
 	 (with-output-to-string (*standard-output*)
@@ -15,7 +15,7 @@ interface=,(princ iface)
 driver=nl80211
 country_code=US
 ssid=,(princ ssid)
-hw_mode=g
+hw_mode=,(princ hw-mode)
 
 ## gus - added 2020-03-01
 ieee80211n=1

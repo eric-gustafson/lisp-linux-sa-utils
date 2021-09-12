@@ -34,8 +34,6 @@
 
 (cffi:defcfun "waitpid" :int (pid :int) (int :pointer))
 
-
-
 (defun update-queue (stack-o-queues e level-key)
   ;; returns true if we could update the stack-queue with the value
   (destructuring-bind (stack-lev stack-q)
@@ -353,7 +351,7 @@ brute-force each of the wireless phy interfaces."
 (defun hostapd-file (ifname)
   (format nil "/etc/hostapd/hostapd-~a.conf" ifname))
 
-(defun setup-hostapd (&key ifname ssid channel pw)
+(defun setup-hostapd (&key ifname ssid channel pw (hw-mode "a"))
   ;; map ifname to dev-number
   (alog (format nil "setup-hostapd ~a ~a ~a ~a"  ifname ssid channel pw))
   (serapeum:and-let*
@@ -374,6 +372,7 @@ brute-force each of the wireless phy interfaces."
 		    pw
 		    :channel  channel
 		    :dsss-cck-40 (phys-id-supports-dsss-cck-40? (ifname->wireless-dev-num ifname))
+		    :hw-mode hw-mode
 		    )
        out)
       )
@@ -381,5 +380,121 @@ brute-force each of the wireless phy interfaces."
     )
   )
 
+(defun extract-integer (str)
+  (multiple-value-bind (b e)
+      (ppcre:scan (:greedy-repetition 1 nil :digit-class) str)
+    (when b
+      (parse-integer (subseq str b :end e)))))
 
+(export 'extract-integer)
+
+(defparameter *channel-regex* (ppcre:create-scanner
+			       `(:SEQUENCE #+nil(:GREEDY-REPETITION 0 NIL :EVERYTHING) #\[
+					   (:REGISTER (:GREEDY-REPETITION 1 NIL :digit-class)) #\]
+					   #+nil(:GREEDY-REPETITION 0 NIL :EVERYTHING)
+					   ))
+  )
+
+(defmethod extract-channel ((obj string))
+  (multiple-value-bind (s e gbv gev)
+      (ppcre:scan *channel-regex* obj)
+    (declare (ignorable s e gbv gev))
+    (when gbv
+      (parse-integer (subseq obj (elt gbv 0) (elt gev 0))))
+    )
+  )
+(export 'extract-channel)
+
+(defparameter *MHz-regex* (ppcre:create-scanner
+			   `(:SEQUENCE
+			     (:REGISTER (:GREEDY-REPETITION 1 NIL :digit-class))
+			     (:GREEDY-REPETITION 1 NIL :whitespace-char-class)
+			     "MHz")))
+			     
+(defmethod extract-MHz ((obj string))
+  (multiple-value-bind (s e gbv gev)
+      (ppcre:scan *MHz-regex* obj)
+    (declare (ignorable s e gbv gev))
+    (when gbv
+      (parse-integer (subseq obj (elt gbv 0) (elt gev 0)))))
+  )
+
+(export 'extract-MHz)
+
+
+;23.0 dBm
+(defparameter *dBm-value-regex* (ppcre:create-scanner
+				 `(:SEQUENCE
+				  (:REGISTER
+				   (:sequence
+				    (:GREEDY-REPETITION 1 NIL :digit-class)
+				    "." 
+				    (:GREEDY-REPETITION 0 NIL :digit-class)				    
+				    ))
+				  (:GREEDY-REPETITION 1 NIL :whitespace-char-class)
+				  "dBm"))
+  )
+
+(defmethod extract-dBm ((obj string))
+  "The 'iw list' command prints out frequence entries (rows) with dBm information.  This function extracts that value as a real number.
+   
+   5745 MHz [149] (20.0 dBm)  
+
+Return values:
+   nil - Channel is disabled, there is no value 'strength'
+  real
+"
+  (multiple-value-bind (s e gbv gev)
+      (ppcre:scan *dBm-value-regex* obj)
+    (declare (ignorable s e gbv gev))
+    (when gbv
+      (parse-real-number (subseq obj (elt gbv 0) (elt gev 0)))))
+  )
+
+(export 'extract-dBm)
+
+(defun get-wifi-freq/chan-table ()
+  "Returns a hashtable of wifi-transmiter-physical-id => supported-frequency info
+
+  The freq-channel tuples are:
+    (channel dBm raw-string-from-iw-list)
+
+  You may reference a particular transmiters channel info like:
+    (href table 1 149) => (149 20.0 \"5745 MHz [149] (20.0 dBm) (no IR)\")
+"
+  (let ((tree (iw-list-tree))
+	(phy-n nil)
+	(dev-table (make-hash-table)))
+    (labels ((tree-walker (node)
+	       (optima:match
+		   node
+		 ((list :phy (and (type number) n))
+		  (setf phy-n n))
+		 ((cons (equalp "Frequencies:") (cons freq-lst rest))
+		  (let ((channel-table (serapeum:ensure2
+					   (gethash phy-n dev-table)
+					 (make-hash-table))))
+		    (loop :for freq-str :in freq-lst
+			  :for dBm = (extract-dBm freq-str)
+			  :for c = (extract-channel freq-str)
+			  :for mHz = (extract-MHz freq-str)
+			  :do
+		      (setf (gethash c channel-table) (list c mHz dBm freq-str))
+		      )
+		    (tree-walker rest)))
+		 ((cons f rest)
+		  (tree-walker f)
+		  (tree-walker rest));; change the physical number
+		 #+nil((type string)
+		  (print node))
+		 )
+	       )
+	     )
+      (tree-walker tree)
+      dev-table
+      )
+    )
+  )
+
+(export 'get-wifi-freq/chan-table)
 

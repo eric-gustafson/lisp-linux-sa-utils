@@ -1,0 +1,23 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+
+(progn
+ (roswell:ensure-asdf)
+ (quicklisp-client:quickload
+  `(#:cffi #:serapeum #:alexandria #:fiasco 
+					       #:lsa-test)
+  :silent t)
+ )
+	  (in-package #:lsa-test)
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (multiple-value-bind (success runs)
+      (fiasco:run-package-tests)
+    (declare (ignore runs))
+    (unless success
+      (sb-ext:exit :code 1))
+    ))
+	  

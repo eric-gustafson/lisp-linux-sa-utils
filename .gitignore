@@ -1,4 +1,5 @@
 # -*- mode: gitignore; -*-
 *~
 \#*\#
-ut
+mf/docs/lsa/gendocs
+mf/ut/lsa/ut

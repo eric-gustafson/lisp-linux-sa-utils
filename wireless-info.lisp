@@ -498,3 +498,32 @@ Return values:
 
 (export 'get-wifi-freq/chan-table)
 
+(defun get-wifi-interface-combinations ()
+  (let ((tree (iw-list-tree))
+	(phy-n nil)
+	(dev-table (make-hash-table)))
+    (labels ((tree-walker (node)
+	       (optima:match
+		   node
+		 ((list :phy (and (type number) n))
+		  (setf phy-n n))
+		 ((list* "valid interface combinations:" rest)
+		  ;; In this subtree, there's only one of these.  So we skip everything
+		  ;; after we found it.
+		  (setf (gethash phy-n dev-table)
+			;;The next 'string' is the marker for end-of-record
+			(loop :for p :in rest
+			      :while (listp p)
+			      :collect p)
+			))
+		 ((cons f rest)
+		  (tree-walker f)
+		  (tree-walker rest));; change the physical number
+		 )))
+      (tree-walker tree)
+      dev-table))
+  )
+
+
+(export 'get-wifi-interface-combinations)
+  

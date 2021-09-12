@@ -354,12 +354,11 @@ brute-force each of the wireless phy interfaces."
 (defun setup-hostapd (&key ifname ssid channel pw hw-mode)
   ;; map ifname to dev-number
   (alog (format nil "setup-hostapd ~a ~a ~a ~a"  ifname ssid channel pw))
-  (when (null hw-mode)
-    (etf hw-mode     
+  (setf hw-mode     
 	 (if (<= channel 11)
 	     "g"
 	     "a"
-	     )))
+	     ))
   (serapeum:and-let*
       ( ;; bad hack to move things along
        (filename (hostapd-file ifname))

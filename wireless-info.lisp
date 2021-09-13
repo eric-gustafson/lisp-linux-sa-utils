@@ -372,7 +372,7 @@ brute-force each of the wireless phy interfaces."
 	      :if-exists :supersede
 	      :if-does-not-exist :create)
       (princ
-       (lsa:hostapd ifname
+       (hostapd ifname
 		    ssid
 		    pw
 		    :channel  channel

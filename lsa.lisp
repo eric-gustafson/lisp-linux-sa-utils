@@ -252,7 +252,6 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defun ip-addr ()
   "An uncached result.  Run's common-splitter over top of the command
 'ip addr'"
-  ;;(common-splitter (eazy-process:exec `("/sbin/ip" "addr")))
   (multiple-value-bind (out err xit-status)
       (uiop-shell:run/s "/sbin/ip addr")
     (declare (ignore err xit-status))
@@ -432,7 +431,6 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 (defmethod add-route ( (target ip-addr) (via ip-addr) )
   (uiop-shell:run/s "ip route add ~a via ~a dev eth0" target ip-addr)
-  ;;(eazy-process:exec `("ip" "route" "add" "172.16.5.0/24" "via" "10.0.0.101" "dev" "eth0"))
   )
 
 

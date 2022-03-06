@@ -6,7 +6,7 @@
 
 (defvar *wifi-info-buffer* nil)
 
-(defun iw-list-raw ()
+(fare-memoization:define-memo-function iw-list-raw ()
   "memoize the text output from running the iw list linux command"
   (unless
       *wifi-info-buffer*
@@ -17,12 +17,17 @@
   *wifi-info-buffer*
   )
 
-(defun iw-dev-raw ()
+(fare-memoization:define-memo-function iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
   (multiple-value-bind (out err xit-code)
       (uiop-shell:run/s "iw dev")
     (declare (ignorable err xit-code))
     out)
+  )
+
+(defun refresh-raw ()
+  (fare-memoization:unmemoize 'iw-dev-raw)
+  (fare-memoization:unmemoize 'iw-list-raw)
   )
 
 (defun get-temp-file ()

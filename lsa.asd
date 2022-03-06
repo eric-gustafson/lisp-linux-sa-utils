@@ -22,6 +22,7 @@
 	       ;;#:iolib
 	       #:uiop-shell
 	       #:rutils
+	       #:fare-memoization
 	       )
   :components ((:file "package")
                (:file "lsa")

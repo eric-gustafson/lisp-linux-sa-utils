@@ -19,7 +19,7 @@
 	       #:stringhere
 	       #:numex
 	       #:cffi
-	       ;;#:iolib
+	       #:iolib
 	       #:uiop-shell
 	       #:rutils
 	       #:fare-memoization
@@ -30,6 +30,6 @@
 	       (:file "wireless-info")
 	       (:file "hostapd")
 	       (:file "git")
-	       ;;(:file "users")
+	       (:file "users")
 	       )
   )

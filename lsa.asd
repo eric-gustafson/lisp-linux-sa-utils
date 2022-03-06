@@ -7,21 +7,21 @@
   :version "0.0.1"
   :serial t
   :depends-on (
+	       #:alexandria
+	       #:cl-interpol
 	       #:serapeum
 	       #:cl-ppcre
-	       #:cl-interpol
 	       #:uiop
 	       #:trivia
 	       #:trivia.ppcre
 	       #:optima
 	       #:optima.ppcre
-	       #:fare-quasiquote-optima
-	       #:fare-quasiquote-readtable
 	       #:stringhere
 	       #:numex
 	       #:cffi
-	       #:iolib
+	       ;;#:iolib
 	       #:uiop-shell
+	       #:rutils
 	       )
   :components ((:file "package")
                (:file "lsa")
@@ -29,6 +29,6 @@
 	       (:file "wireless-info")
 	       (:file "hostapd")
 	       (:file "git")
-	       (:file "users")
+	       ;;(:file "users")
 	       )
   )

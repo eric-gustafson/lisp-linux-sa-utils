@@ -8,15 +8,15 @@ exec ros -Q -- $0 "$@"
  (roswell:ensure-asdf)
  (quicklisp-client:quickload
   `(#:cffi #:serapeum #:alexandria #:fiasco 
-	   ;#:lsa-test
+	   ;#:lsa-test-test
 	   )
   :silent t)
  )
-;;	  (in-package #:lsa-test)
+;;	  (in-package #:lsa-test-test)
 (defun main (&rest argv)
   (let (
 	(addex-packages  `( 
-"lsa-test"))
+"lsa-test-test"))
 	)
     (print argv)
     (let* ((x (loop :for a :in argv

@@ -5,11 +5,11 @@ exec ros -Q -- $0 "$@"
 |#
 (progn ;;init forms
   (ros:ensure-asdf)
-  #+quicklisp(ql:quickload '(#:staple #:staple-markdown #:LSA) :silent t)
+  #+quicklisp(ql:quickload '(#:staple #:staple-markdown #:LSA-TEST-TEST) :silent t)
   )
       
 (defclass my-page (staple:simple-page) ())
-(defmethod staple:page-type ((system (eql (asdf:find-system (quote :lsa)))))
+(defmethod staple:page-type ((system (eql (asdf:find-system (quote #:lsa-test-test)))))
   'my-page)
 
 (defmethod staple:compile-source ((document pathname) (page my-page))
@@ -25,8 +25,8 @@ exec ros -Q -- $0 "$@"
 	  
 (defun main (&rest argv)
   (declare (ignorable argv))
-  (format t "Generating documentation for ~a.~%" (quote :lsa))
-  (staple:generate (quote :lsa) :if-exists :supersede :output-directory (uiop:getcwd))
+  (format t "Generating documentation for ~a.~%" (quote #:lsa-test-test))
+  (staple:generate (quote #:lsa-test-test) :if-exists :supersede :output-directory (uiop:getcwd))
   )
 ;;; vim: set ft=lisp lisp:
 

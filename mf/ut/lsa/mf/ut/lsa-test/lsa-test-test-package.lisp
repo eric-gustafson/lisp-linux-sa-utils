@@ -1,5 +1,5 @@
 (fiasco:define-test-package
-	      #:lsa-test
+	      #:lsa-test-test
 	    (:local-nicknames 
 	     (:al  :alexandria)
 	     (:a :alexandria)
@@ -10,7 +10,7 @@
 	     (:s :serapeum)
 	     (:r :rutils)
 	     )	    
-	    (:use #:cl #:lsa
+	    (:use #:cl #:lsa-test
 		  #:serapeum)
 	    )
 	  

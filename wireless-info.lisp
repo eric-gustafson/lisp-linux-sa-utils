@@ -194,12 +194,12 @@ device-ids of the system (linux)"
     (setf dev-lst (iw-list-tree)))
   (cond
     ((null key)
-     (serapeum:filter-map (optima.extra:lambda-match
+     (serapeum:filter-map (trivia:lambda-match
 			    ((list :phy n) n))
 			  dev-lst))
     ((numberp key)
      (loop :for (A tree) :on dev-lst :by #'cddr :do
-	  (match
+	  (trivia:match
 	      A
 	    ((list :phy n)
 	     ;;(format t "~a,key=~a,number? ~a~%" n  key (equal key n))
@@ -453,7 +453,7 @@ Return values:
       (ppcre:scan *dBm-value-regex* obj)
     (declare (ignorable s e gbv gev))
     (when gbv
-      (parse-real-number (subseq obj (elt gbv 0) (elt gev 0)))))
+      (s:parse-real-number (subseq obj (elt gbv 0) (elt gev 0)))))
   )
 
 (export 'extract-dBm)

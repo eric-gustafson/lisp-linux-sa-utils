@@ -63,10 +63,10 @@
       )))
 
 (defun machine-info()
-  (trivia:match
+  (pm:match
       (machine-info-model)
     ((and (type string)
-	  (ppcre "^Model[^:]+:\\s+(.*)" x))
+	  (pm.ppcre:ppcre "^Model[^:]+:\\s+(.*)" x))
      x)
     )
   )

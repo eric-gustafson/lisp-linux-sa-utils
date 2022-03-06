@@ -72,4 +72,4 @@ of the iw list command"
        )
   )
 
-(*export 'dBm-values)
+(export 'dBm-values)

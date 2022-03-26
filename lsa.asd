@@ -12,6 +12,7 @@
 	       #:serapeum
 	       #:cl-ppcre
 	       #:uiop
+	       #:log4cl
 	       #:trivia
 	       #:trivia.ppcre
 	       #:optima

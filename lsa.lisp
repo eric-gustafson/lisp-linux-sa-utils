@@ -125,6 +125,26 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (export '/sys->wireless)
 
+(defun search-dirRs-for-file (dir-path file-marker)
+  (s:with-collector (g)
+    (labels ((search-dir (dir)
+	       (r:when-it (probe-file (merge-pathnames file-marker dir))
+		 (g it))
+	       (when (equalp (truename dir) dir)
+		 (loop
+		   :for sd :in (uiop:subdirectories dir)
+		   :do
+		      (search-dir sd)
+		   ))))
+      (search-dir dir-path)
+      )
+    )
+  )
+
+(defun /sys/devicesR/*authorized ()
+  (search-dirRs-for-file #P"/sys/devices/" "authorized")
+  )
+  
 (defun /sys-devices->wireless ()
   "Find all wireless devices underneath the devies subdirectory. "
   (s:with-collector (g)

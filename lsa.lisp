@@ -126,11 +126,13 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (export '/sys->wireless)
 
-(defun search-dirRs-for-file (dir-path file-marker)
+(defun search-dirRs-for-file (dir-path file-marker &key (stop-after-found))
   (s:with-collector (g)
     (labels ((search-dir (dir)
 	       (r:when-it (probe-file (merge-pathnames file-marker dir))
-		 (g r:it))
+		 (g r:it)
+		 (if stop-after-found (return-from search-dir))
+		 )
 	       (when (equalp (truename dir) dir)
 		 (loop
 		   :for sd :in (uiop:subdirectories dir)
@@ -143,7 +145,7 @@ this function returns two values: (usb-bus-number usb-device-number)
   )
 
 (defun /sys/devicesR/*authorized ()
-  (search-dirRs-for-file #P"/sys/devices/" "authorized")
+  (search-dirRs-for-file #P"/sys/devices/" "authorized" :stop-after-found t)
   )
 
 (defun reset-path!! (path)
@@ -151,15 +153,14 @@ this function returns two values: (usb-bus-number usb-device-number)
   (uiop/stream:with-output-file (out path :if-exists :append)    (princ  1 out))
   )
 
+
 (defun reset-all-usbs ()
   (loop :for up :in (/sys/devicesR/*authorized) :do
     (log4cl:log-debug "resetting usb device: ~a" up)
     (handler-case
 	(progn
-	  (with-open-file (out up :direction :output :if-exists :append)
-	    (format out "~a~%" 0))
-	  (with-open-file (out up :direction :output :if-exists :append)
-	    (format out "~a~%" 1))
+	  (log4cl:log-error "resetting usb device: ~a" up)
+	  (reset-path!! up)
 	  )
       (error (c)
 	 (let ((bt (with-output-to-string (s)

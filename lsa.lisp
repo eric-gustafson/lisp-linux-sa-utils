@@ -71,6 +71,78 @@
     )
   )
 
+(defun /sys/devices/platform*-dev-and-bus (path)
+  "Given the parameter:
+
+ /sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.4/1-1.4:1.0/net/wlan1
+
+this function returns two values: (usb-bus-number usb-device-number)
+"
+  )
+
+(defun /dev/bus/usb-reset (hub-num dev-num)
+  (let ((dev-path (format nil "/dev/bus/usb/~3,'0x/~3,'0x" hub-num dev-num)))
+    (let ((a (osicat-posix:open dev-path 2)))
+      (unwind-protect
+	   ;;#define USBDEVFS_RESET             _IO('U', 20)   //usbdevice_fs.h
+	   (osicat-posix:ioctl a 20)
+	(osicat-posix:close a)
+	))
+    dev-path
+    )
+  )
+
+;; TODO: This is not good for recovery since I bet the entry ofr /sys/class/net
+;;  goes away when we loose the dongle.
+(defun /sys->wireless ()
+  "On Linux, under /sys/class/net all of the network devices are
+  listed.  This function loops through those, filtering for wireless
+  devices and then it returns a list that is the directory to that
+  device, along with key information reading from the kernels devices info from the file system.
+"
+  (labels ((/sys->ieee80211-info (path)
+	     (loop
+	       :for wifi-info :in  `("addresses"
+				     "address_mask"
+				     "index"
+				     "macaddress"
+				     "name")
+	       :collect (r:mkeyw  wifi-info) 
+	       :collect
+	       (uiop:safe-read-file-line  (merge-pathnames
+					   wifi-info
+					   path))))
+	   )
+    (loop :for dev :in  (uiop:subdirectories #P"/sys/class/net/")
+	  :for it = (probe-file (merge-pathnames "wireless" dev))
+	  :for phys = (probe-file (merge-pathnames "phy80211" dev))
+	  :when it
+	    :collect  (list dev (pathname-directory it)
+			    (/sys->ieee80211-info phys)
+			    ))
+    )
+  )
+
+(export '/sys->wireless)
+
+(defun /sys-devices->wireless ()
+  "Find all wireless devices underneath the devies subdirectory. "
+  (s:with-collector (g)
+    (labels ((search-dir (dir)
+	       (cond
+		 ((probe-file (merge-pathnames "wireless" dir))
+		  (g dir))
+		 ((equalp (truename dir) dir)
+		  (loop
+		    :for sd :in (uiop:subdirectories dir)
+		    :do
+		       (search-dir sd)
+		    )))))
+      (search-dir #P"/sys/devices/")
+      )
+    )
+  )
+
 (defun /sys->link-obj ()
   "Use the proc file system to return link objects for the system"
   (let (

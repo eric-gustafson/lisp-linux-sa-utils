@@ -24,6 +24,7 @@
 	       #:rutils
 	       #:fare-memoization
 	       #:osicat
+	       #:trivial-backtrace
 	       )
   :components ((:file "package")
                (:file "lsa")

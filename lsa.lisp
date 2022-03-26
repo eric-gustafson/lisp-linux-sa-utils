@@ -71,7 +71,7 @@
     )
   )
 
-(defun /sys/devices/platform*-dev-and-bus (path)
+#+nil(defun /sys/devices/platform*-dev-and-bus (path)
   "Given the parameter:
 
  /sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.4/1-1.4:1.0/net/wlan1
@@ -80,8 +80,9 @@ this function returns two values: (usb-bus-number usb-device-number)
 "
   )
 
-(defun /dev/bus/usb-reset (hub-num dev-num)
+#+nil(defun /dev/bus/usb-reset (hub-num dev-num)
   (let ((dev-path (format nil "/dev/bus/usb/~3,'0x/~3,'0x" hub-num dev-num)))
+    (log4cl:log-error "resetting ~a" dev-path)
     (let ((a (osicat-posix:open dev-path 2)))
       (unwind-protect
 	   ;;#define USBDEVFS_RESET             _IO('U', 20)   //usbdevice_fs.h
@@ -129,7 +130,7 @@ this function returns two values: (usb-bus-number usb-device-number)
   (s:with-collector (g)
     (labels ((search-dir (dir)
 	       (r:when-it (probe-file (merge-pathnames file-marker dir))
-		 (g it))
+		 (g r:it))
 	       (when (equalp (truename dir) dir)
 		 (loop
 		   :for sd :in (uiop:subdirectories dir)
@@ -144,7 +145,33 @@ this function returns two values: (usb-bus-number usb-device-number)
 (defun /sys/devicesR/*authorized ()
   (search-dirRs-for-file #P"/sys/devices/" "authorized")
   )
-  
+
+(defun reset-path!! (path)
+  (uiop/stream:with-output-file (out path :if-exists :append)    (princ  0 out))
+  (uiop/stream:with-output-file (out path :if-exists :append)    (princ  1 out))
+  )
+
+(defun reset-all-usbs ()
+  (loop :for up :in (/sys/devicesR/*authorized) :do
+    (log4cl:log-debug "resetting usb device: ~a" up)
+    (handler-case
+	(progn
+	  (with-open-file (out up :direction :output :if-exists :append)
+	    (format out "~a~%" 0))
+	  (with-open-file (out up :direction :output :if-exists :append)
+	    (format out "~a~%" 1))
+	  )
+      (error (c)
+	 (let ((bt (with-output-to-string (s)
+		     (trivial-backtrace:print-backtrace-to-stream s))))
+	   (log4cl:log-error "Unhandled seriours-condition of type ~A: ~A~%~A"
+			     (type-of c) c bt)
+	   )
+	)
+      )
+    )
+  )
+
 (defun /sys-devices->wireless ()
   "Find all wireless devices underneath the devies subdirectory. "
   (s:with-collector (g)

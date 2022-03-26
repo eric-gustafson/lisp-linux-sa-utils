@@ -23,6 +23,7 @@
 	       #:uiop-shell
 	       #:rutils
 	       #:fare-memoization
+	       #:osicat
 	       )
   :components ((:file "package")
                (:file "lsa")

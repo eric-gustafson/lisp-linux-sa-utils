@@ -413,10 +413,11 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   "An uncached result.  Run's common-splitter over top of the command
 'ip addr'"
   (multiple-value-bind (out err xit-status)
-      (uiop-shell:run/s "/sbin/ip addr")
+      (uiop:run-program "/sbin/ip addr" :output :string :error-count :string)
     (declare (ignore err xit-status))
     (common-splitter out))
   )
+(export 'ip-addr)
 
 (defun ip-addr-from-text-list (text-lst)
   (serapeum:filter-map

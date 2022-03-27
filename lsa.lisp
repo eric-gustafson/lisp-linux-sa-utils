@@ -191,7 +191,7 @@ this function returns two values: (usb-bus-number usb-device-number)
   (uiop/stream:with-output-file (out path :if-exists :append)    (princ  1 out))
   )
 
-(defun reset-all-usbs ()
+(defun reset-all-usbs!! ()
   (loop :for up :in (/sys/devicesR/*authorized) :do
     (log4cl:log-debug "resetting usb device: ~a" up)
     (handler-case
@@ -209,6 +209,8 @@ this function returns two values: (usb-bus-number usb-device-number)
       )
     )
   )
+
+(export 'reset-all-usbs!!)
 
 (defun /sys-devices->wireless ()
   "Find all wireless devices underneath the devies subdirectory. "

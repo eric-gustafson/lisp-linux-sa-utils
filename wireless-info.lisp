@@ -534,6 +534,5 @@ Return values:
       dev-table))
   )
 
-
 (export 'get-wifi-interface-combinations)
   

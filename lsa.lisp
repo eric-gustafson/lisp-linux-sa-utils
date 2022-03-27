@@ -126,6 +126,44 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (export '/sys->wireless)
 
+(defun /sys-wireless-devices-key-info ()
+  ;; [2022-03-29 GUS]
+  ;; It looks like the rest of this system doesn't need these yet.
+  ;; The minor number looked to be interesting, but I think it's sufficient
+  ;; at this time to reset all USB hubs when things get wacky.  
+  "returns (ifname address address-mask dev-type  device-index )
+- ifname: wlan0
+- address: the mac-address 
+- address-mask: how many macs can we assign?
+- dev-type: soc, scb.  I think this means onboard or USB bus.  
+- dev-index:  The minor number."
+  (labels ((key-info (wobj)
+	     (pm:match wobj
+	       ((list net-pathname absolute-path-list details-plist)
+		`(
+		  :iface ,(car (last (pathname-directory net-pathname)))
+		  :mac ,(getf details-plist :addresses )
+		  :mac-mask ,(getf details-plist :address_mask )
+		  :hw-class ,(a:format-symbol :keyword "~:@(~a~)" (cadr (member "platform" absolute-path-list :test #'equalp)))
+		  :hw-minor ,(uiop:safe-read-from-string (getf details-plist :index))
+		  )
+		)
+	       )
+	     ))
+    (mapcar #'key-info (/sys->wireless))
+    )
+  )
+
+(defun soc-key-info ()
+  (remove-if-not #'(lambda(rec) (eql (getf rec :hw-class) :soc)) (/sys-wireless-devices-key-info))
+  )
+
+(defun scb-key-info ()
+  (remove-if-not #'(lambda(rec) (eql (getf rec :hw-class) :scb)) (/sys-wireless-devices-key-info))  
+  )
+
+(export '(/sys-wireless-devices-key-info soc-key-info scb-key-info))
+
 (defun search-dirRs-for-file (dir-path file-marker &key (stop-after-found))
   (s:with-collector (g)
     (labels ((search-dir (dir)
@@ -189,6 +227,7 @@ this function returns two values: (usb-bus-number usb-device-number)
       )
     )
   )
+
 
 (defun /sys->link-obj ()
   "Use the proc file system to return link objects for the system"

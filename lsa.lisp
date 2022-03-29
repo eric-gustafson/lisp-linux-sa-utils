@@ -126,6 +126,21 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (export '/sys->wireless)
 
+(defun /sys-extract-platform-signature (sys-wireless-devices-path)
+  "The sublist of the /sys path between 'devices' and 'net' which is
+  used to classify what we are working with"
+  (let ((start (member "devices" sys-wireless-devices-path :test #'equalp)))
+    (loop :for p :in (cdr start) :while (not (equal p "net")) :collect p))
+  )
+
+(pm:defun-match /sys-dev-sig (sig)
+  ((list* (equalp "platform") type _)
+   (a:format-symbol :keyword "~:@(~a~)" type))
+  (otherwise
+   (if (loop :for txt :in sig :thereis (eq 0 (search "pci" txt)))
+       :pci))
+  )
+
 (defun /sys-wireless-devices-key-info ()
   ;; [2022-03-29 GUS]
   ;; It looks like the rest of this system doesn't need these yet.
@@ -144,7 +159,8 @@ this function returns two values: (usb-bus-number usb-device-number)
 		  :iface ,(car (last (pathname-directory net-pathname)))
 		  :mac ,(getf details-plist :addresses )
 		  :mac-mask ,(getf details-plist :address_mask )
-		  :hw-class ,(a:format-symbol :keyword "~:@(~a~)" (cadr (member "platform" absolute-path-list :test #'equalp)))
+		  :hw-class ,(/sys-dev-sig
+			     (/sys-extract-platform-signature absolute-path-list))
 		  :hw-minor ,(uiop:safe-read-from-string (getf details-plist :index))
 		  )
 		)
@@ -158,11 +174,25 @@ this function returns two values: (usb-bus-number usb-device-number)
   (remove-if-not #'(lambda(rec) (eql (getf rec :hw-class) :soc)) (/sys-wireless-devices-key-info))
   )
 
+(defun soc-mac ()
+  "Returns the mac-address of the onboard wireless adapter"
+  (getf (soc-key-info) :mac)
+  )
+(export 'soc-mac)
+
+
 (defun scb-key-info ()
   (remove-if-not #'(lambda(rec) (eql (getf rec :hw-class) :scb)) (/sys-wireless-devices-key-info))  
   )
 
 (export '(/sys-wireless-devices-key-info soc-key-info scb-key-info))
+
+(defun scb-macs ()
+  "Returns a list of USB wireless devices"
+  (mapcar #'(lambda(rec) (getf rec :mac)) (scb-key-info))
+  )
+
+(export 'scb-macs)
 
 (defun search-dirRs-for-file (dir-path file-marker &key (stop-after-found))
   (s:with-collector (g)
@@ -254,6 +284,13 @@ this function returns two values: (usb-bus-number usb-device-number)
        )
     stuff)
   )
+
+(defun /sys->link-obj-mac (mac)
+  "Return a link-obj for the given macaddress"
+  (find mac (/sys->link-obj) :key #'mac :test #'equalp)
+  )
+
+(export '/sys->link-obj-mac)
 
 (defclass ip-addr (link)
   (

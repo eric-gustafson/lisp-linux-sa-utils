@@ -176,7 +176,10 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (defun soc-mac ()
   "Returns the mac-address of the onboard wireless adapter"
-  (getf (soc-key-info) :mac)
+  (pm:match
+      (soc-key-info)
+    ((cons first _)
+     (getf  first :mac)))
   )
 (export 'soc-mac)
 

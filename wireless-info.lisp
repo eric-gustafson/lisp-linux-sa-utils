@@ -224,13 +224,13 @@ device-ids of the system (linux)"
 
 (defun phys-iota (&key (txt (iw-dev-raw)))
   "Returns a list of integers for each of the physical-wireless interfaces"
-  (serapeum:collecting
+  (serapeum:with-collector (g)
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
-	 (trivia:match
+	 (pm:match
 	     l
-	   ((trivia.ppcre:ppcre "^phy#(\\d+).*" n)
-	    (collect (parse-number n))))
-	 ))
+	   ((pm.ppcre:ppcre "^phy#(\\d+).*" n)
+	    (g (parse-integer n))))
+	  ))
   )
 
 ;; Note, not sure how to target when we have more than 1 interface, but since

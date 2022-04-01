@@ -235,7 +235,7 @@ this function returns two values: (usb-bus-number usb-device-number)
       (error (c)
 	 (let ((bt (with-output-to-string (s)
 		     (trivial-backtrace:print-backtrace-to-stream s))))
-	   (log4cl:log-error "Unhandled seriours-condition of type ~A: ~A~%~A"
+	   (log4cl:log-error "Unhandled condition of type ~A: ~A~%~A"
 			     (type-of c) c bt)
 	   )
 	)

@@ -372,6 +372,7 @@ brute-force each of the wireless phy interfaces."
 	 (filename (hostapd-file ifname))
 	 (pathname (pathname filename))
 	 )
+      (log4cl:log-info "hostapd conf info: ~S" (list pathname filename))
       (uiop:ensure-all-directories-exist (list pathname))
       (with-open-file
 	  (out  pathname

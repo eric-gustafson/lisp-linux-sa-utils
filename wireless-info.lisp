@@ -358,35 +358,39 @@ brute-force each of the wireless phy interfaces."
 
 (defun setup-hostapd (&key ifname ssid channel pw hw-mode)
   ;; map ifname to dev-number
-  (alog (format nil "setup-hostapd ~a ~a ~a ~a"  ifname ssid channel pw))
-  (setf hw-mode     
-	 (if (<= channel 11)
-	     "g"
-	     "a"
-	     ))
-  (serapeum:and-let*
-      ( ;; bad hack to move things along
-       (filename (hostapd-file ifname))
-       (pathname (pathname filename))
-       )
-    (uiop:ensure-all-directories-exist (list pathname))
-    (with-open-file
-	(out  pathname
-	      :direction :output
-	      ;;:element-type :utf-8 ;;'(unsigned-byte 8)
-	      :if-exists :supersede
-	      :if-does-not-exist :create)
-      (princ
-       (hostapd ifname
-		    ssid
-		    pw
+  (let ((arg-lst (list ifname ssid channel pw)))
+    (log4cl:log-info "setup-hostapd ~S"  arg-lst)
+    (unless (notany #'null arg-lst)
+      (error "null values not allowd: ~S" arg-lst))
+    (setf hw-mode     
+	  (if (<= channel 11)
+	      "g"
+	      "a"
+	      ))
+    (serapeum:and-let*
+	( ;; bad hack to move things along
+	 (filename (hostapd-file ifname))
+	 (pathname (pathname filename))
+	 )
+      (uiop:ensure-all-directories-exist (list pathname))
+      (with-open-file
+	  (out  pathname
+		:direction :output
+		;;:element-type :utf-8 ;;'(unsigned-byte 8)
+		:if-exists :supersede
+		:if-does-not-exist :create)
+	(princ
+	 (hostapd ifname
+		  ssid
+		  pw
 		    :channel  channel
 		    :dsss-cck-40 (phys-id-supports-dsss-cck-40? (ifname->wireless-dev-num ifname))
 		    :hw-mode hw-mode
 		    )
-       out)
+	 out)
+	)
+      pathname
       )
-    pathname
     )
   )
 

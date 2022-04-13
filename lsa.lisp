@@ -444,6 +444,19 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 (export 'ip-addresses-for-dev)
 
+(defun dev-clear-addresses (dev)
+  "queries all of the address on the dev, and then deletes them"
+  (autils:log-backtrace-errors
+   (loop :for (_ ip) :in (ip-addresses-for-dev dev)
+	 :do
+	    (uiop:run-program
+	     (format
+	      "/sbin/ip address del ~a brd + dev ~a" ip dev))
+	 )
+   )
+  )
+
+(export 'dev-clear-addresses)
 
 ;; note-to-self:  Only drop the traffic for the default case when the target network is under the
 ;;  agents control, it's responsability.

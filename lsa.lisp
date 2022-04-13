@@ -449,8 +449,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   (loop :for (_ ip) :in (ip-addresses-for-dev dev)
 	:do
 	   (uiop:run-program
-	    (format
-	     "/sbin/ip address del ~a brd + dev ~a" ip dev))
+	    (format nil	"/sbin/ip address del ~a brd + dev ~a" ip dev))
 	)
   )
 

@@ -31,7 +31,7 @@
 
 (export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!!))
 
-(defun clear-routes ()
+(defun clear-wifi-routes ()
   (loop :for route :in (ip-routes) :do
     (unless (search "eth0" route)
       (uiop:run-program (format nil "ip route del ~a" route))
@@ -39,4 +39,4 @@
 	)
   )
 
-(export 'clear-routes)
+(export 'clear-wifi-routes)

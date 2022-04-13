@@ -446,14 +446,12 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 (defun dev-clear-addresses (dev)
   "queries all of the address on the dev, and then deletes them"
-  (autils:log-backtrace-errors
-   (loop :for (_ ip) :in (ip-addresses-for-dev dev)
-	 :do
-	    (uiop:run-program
-	     (format
-	      "/sbin/ip address del ~a brd + dev ~a" ip dev))
-	 )
-   )
+  (loop :for (_ ip) :in (ip-addresses-for-dev dev)
+	:do
+	   (uiop:run-program
+	    (format
+	     "/sbin/ip address del ~a brd + dev ~a" ip dev))
+	)
   )
 
 (export 'dev-clear-addresses)

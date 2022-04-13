@@ -33,8 +33,8 @@
 
 (defun clear-routes ()
   (loop :for route :in (ip-routes) :do
-    (unless (search "default" route)
-      (uiop:run-program (format nil "ip route del " route))
+    (unless (search "eth0" route)
+      (uiop:run-program (format nil "ip route del ~a" route))
       )
 	)
   )

@@ -31,4 +31,12 @@
 
 (export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!!))
 
+(defun clear-routes ()
+  (loop :for route :in (ip-routes) :do
+    (unless (search "default" route)
+      (uiop:run-program (format nil "ip route del " route))
+      )
+	)
+  )
 
+(export 'clear-routes)

@@ -433,6 +433,18 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   )
 
 
+(defun ip-addresses-for-dev (dev)
+  "Return the results for 'ip addr show dev XXX', filtering for 'inet'"
+  (loop :for line
+	  :in (serapeum:lines
+	       (uiop:run-program (format nil "ip addr show dev ~s" dev)
+				 :output :string :error-output :string :ignore-error-status t))
+	:when (search "inet" line) :collect (serapeum:tokens line))
+  )
+
+(export 'ip-addresses-for-dev)
+
+
 ;; note-to-self:  Only drop the traffic for the default case when the target network is under the
 ;;  agents control, it's responsability.
 (defun disable-xtalk (neta netb cidrb)

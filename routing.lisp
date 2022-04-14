@@ -29,7 +29,13 @@
   (uiop-shell:run/s "ip route add ~a via ~a" cidr-net gateway-ip)
   )
 
-(export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!!))
+(defgeneric route-add-cidr-via (cidr-net via-ip)
+  (:method ((cidr-net string) (via-ip string))
+    (uiop:run-program (format nil "ip route add ~a via ~a" cidr-net via-ip) :output :string :error-output :string)
+    )
+  )
+
+(export '(ip-routes ip-default-route delete-default-route!! route-add-default-gw!! route-add-cidr-via))
 
 (defun clear-wifi-routes ()
   (loop :for route :in (ip-routes) :do

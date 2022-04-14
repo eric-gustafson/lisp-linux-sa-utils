@@ -60,13 +60,199 @@ phy#0
 ** iw list
     
 ***  Does our device support AP mode? [X] Yes it does
-#+BEGIN_SRC sh :results output :dir /sudo::/root
+
+#+BEGIN_SRC sh :results output :dir /ssh:root@192.168.1.2:/tmp
   iw list
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
-Wiphy phy5
+Wiphy phy1
+	max # scan SSIDs: 10
+	max scan IEs length: 2048 bytes
+	max # sched scan SSIDs: 16
+	max # match sets: 16
+	max # scan plans: 1
+	max scan plan interval: 508
+	max scan plan iterations: 0
+	Retry short limit: 7
+	Retry long limit: 4
+	Coverage class: 0 (up to 0m)
+	Device supports roaming.
+	Supported Ciphers:
+		,* WEP40 (00-0f-ac:1)
+		,* WEP104 (00-0f-ac:5)
+		,* TKIP (00-0f-ac:2)
+		,* CCMP-128 (00-0f-ac:4)
+		,* CMAC (00-0f-ac:6)
+	Available Antennas: TX 0 RX 0
+	Supported interface modes:
+		 ,* IBSS
+		 ,* managed
+		 ,* AP
+		 ,* P2P-client
+		 ,* P2P-GO
+		 ,* P2P-device
+	Band 1:
+		Capabilities: 0x1062
+			HT20/HT40
+			Static SM Power Save
+			RX HT20 SGI
+			RX HT40 SGI
+			No RX STBC
+			Max AMSDU length: 3839 bytes
+			DSSS/CCK HT40
+		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
+		Minimum RX AMPDU time spacing: 16 usec (0x07)
+		HT TX/RX MCS rate indexes supported: 0-7
+		Bitrates (non-HT):
+			,* 1.0 Mbps
+			,* 2.0 Mbps (short preamble supported)
+			,* 5.5 Mbps (short preamble supported)
+			,* 11.0 Mbps (short preamble supported)
+			,* 6.0 Mbps
+			,* 9.0 Mbps
+			,* 12.0 Mbps
+			,* 18.0 Mbps
+			,* 24.0 Mbps
+			,* 36.0 Mbps
+			,* 48.0 Mbps
+			,* 54.0 Mbps
+		Frequencies:
+			,* 2412 MHz [1] (20.0 dBm)
+			,* 2417 MHz [2] (20.0 dBm)
+			,* 2422 MHz [3] (20.0 dBm)
+			,* 2427 MHz [4] (20.0 dBm)
+			,* 2432 MHz [5] (20.0 dBm)
+			,* 2437 MHz [6] (20.0 dBm)
+			,* 2442 MHz [7] (20.0 dBm)
+			,* 2447 MHz [8] (20.0 dBm)
+			,* 2452 MHz [9] (20.0 dBm)
+			,* 2457 MHz [10] (20.0 dBm)
+			,* 2462 MHz [11] (20.0 dBm)
+			,* 2467 MHz [12] (disabled)
+			,* 2472 MHz [13] (disabled)
+			,* 2484 MHz [14] (disabled)
+	Band 2:
+		Capabilities: 0x1062
+			HT20/HT40
+			Static SM Power Save
+			RX HT20 SGI
+			RX HT40 SGI
+			No RX STBC
+			Max AMSDU length: 3839 bytes
+			DSSS/CCK HT40
+		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
+		Minimum RX AMPDU time spacing: 16 usec (0x07)
+		HT TX/RX MCS rate indexes supported: 0-7
+		VHT Capabilities (0x00001020):
+			Max MPDU length: 3895
+			Supported Channel Width: neither 160 nor 80+80
+			short GI (80 MHz)
+			SU Beamformee
+		VHT RX MCS set:
+			1 streams: MCS 0-9
+			2 streams: not supported
+			3 streams: not supported
+			4 streams: not supported
+			5 streams: not supported
+			6 streams: not supported
+			7 streams: not supported
+			8 streams: not supported
+		VHT RX highest supported: 0 Mbps
+		VHT TX MCS set:
+			1 streams: MCS 0-9
+			2 streams: not supported
+			3 streams: not supported
+			4 streams: not supported
+			5 streams: not supported
+			6 streams: not supported
+			7 streams: not supported
+			8 streams: not supported
+		VHT TX highest supported: 0 Mbps
+		Bitrates (non-HT):
+			,* 6.0 Mbps
+			,* 9.0 Mbps
+			,* 12.0 Mbps
+			,* 18.0 Mbps
+			,* 24.0 Mbps
+			,* 36.0 Mbps
+			,* 48.0 Mbps
+			,* 54.0 Mbps
+		Frequencies:
+			,* 5170 MHz [34] (disabled)
+			,* 5180 MHz [36] (20.0 dBm)
+			,* 5190 MHz [38] (disabled)
+			,* 5200 MHz [40] (20.0 dBm)
+			,* 5210 MHz [42] (disabled)
+			,* 5220 MHz [44] (20.0 dBm)
+			,* 5230 MHz [46] (disabled)
+			,* 5240 MHz [48] (20.0 dBm)
+			,* 5260 MHz [52] (20.0 dBm) (no IR, radar detection)
+			,* 5280 MHz [56] (20.0 dBm) (no IR, radar detection)
+			,* 5300 MHz [60] (20.0 dBm) (no IR, radar detection)
+			,* 5320 MHz [64] (20.0 dBm) (no IR, radar detection)
+			,* 5500 MHz [100] (20.0 dBm) (no IR, radar detection)
+			,* 5520 MHz [104] (20.0 dBm) (no IR, radar detection)
+			,* 5540 MHz [108] (20.0 dBm) (no IR, radar detection)
+			,* 5560 MHz [112] (20.0 dBm) (no IR, radar detection)
+			,* 5580 MHz [116] (20.0 dBm) (no IR, radar detection)
+			,* 5600 MHz [120] (20.0 dBm) (no IR, radar detection)
+			,* 5620 MHz [124] (20.0 dBm) (no IR, radar detection)
+			,* 5640 MHz [128] (20.0 dBm) (no IR, radar detection)
+			,* 5660 MHz [132] (20.0 dBm) (no IR, radar detection)
+			,* 5680 MHz [136] (20.0 dBm) (no IR, radar detection)
+			,* 5700 MHz [140] (20.0 dBm) (no IR, radar detection)
+			,* 5720 MHz [144] (20.0 dBm) (no IR, radar detection)
+			,* 5745 MHz [149] (20.0 dBm)
+			,* 5765 MHz [153] (20.0 dBm)
+			,* 5785 MHz [157] (20.0 dBm)
+			,* 5805 MHz [161] (20.0 dBm)
+			,* 5825 MHz [165] (20.0 dBm)
+	Supported commands:
+		 ,* new_interface
+		 ,* set_interface
+		 ,* new_key
+		 ,* start_ap
+		 ,* join_ibss
+		 ,* set_pmksa
+		 ,* del_pmksa
+		 ,* flush_pmksa
+		 ,* remain_on_channel
+		 ,* frame
+		 ,* set_wiphy_netns
+		 ,* set_channel
+		 ,* start_sched_scan
+		 ,* start_p2p_device
+		 ,* connect
+		 ,* disconnect
+		 ,* crit_protocol_start
+		 ,* crit_protocol_stop
+		 ,* update_connect_params
+	Supported TX frame types:
+		 ,* managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-device: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+	Supported RX frame types:
+		 ,* managed: 0x40 0xd0
+		 ,* AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 ,* P2P-client: 0x40 0xd0
+		 ,* P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 ,* P2P-device: 0x40 0xd0
+	software interface modes (can always be added):
+	valid interface combinations:
+		 ,* #{ managed } <= 1, #{ P2P-device } <= 1, #{ P2P-client, P2P-GO } <= 1,
+		   total <= 3, #channels <= 2
+		 ,* #{ managed } <= 1, #{ AP } <= 1, #{ P2P-client } <= 1, #{ P2P-device } <= 1,
+		   total <= 4, #channels <= 1
+	Device supports scan flush.
+	Device supports randomizing MAC-addr in sched scans.
+	Supported extended features:
+		,* [ 4WAY_HANDSHAKE_STA_PSK ]: 4-way handshake with PSK in station mode
+		,* [ 4WAY_HANDSHAKE_STA_1X ]: 4-way handshake with 802.1X in station mode
+Wiphy phy0
 	max # scan SSIDs: 4
 	max scan IEs length: 2257 bytes
 	max # sched scan SSIDs: 0
@@ -78,21 +264,21 @@ Wiphy phy5
 	Coverage class: 0 (up to 0m)
 	Device supports RSN-IBSS.
 	Supported Ciphers:
-		* WEP40 (00-0f-ac:1)
-		* WEP104 (00-0f-ac:5)
-		* TKIP (00-0f-ac:2)
-		* CCMP-128 (00-0f-ac:4)
-		* CCMP-256 (00-0f-ac:10)
-		* GCMP-128 (00-0f-ac:8)
-		* GCMP-256 (00-0f-ac:9)
+		,* WEP40 (00-0f-ac:1)
+		,* WEP104 (00-0f-ac:5)
+		,* TKIP (00-0f-ac:2)
+		,* CCMP-128 (00-0f-ac:4)
+		,* CCMP-256 (00-0f-ac:10)
+		,* GCMP-128 (00-0f-ac:8)
+		,* GCMP-256 (00-0f-ac:9)
 	Available Antennas: TX 0 RX 0
 	Supported interface modes:
-		 * IBSS
-		 * managed
-		 * AP
-		 * AP/VLAN
-		 * monitor
-		 * mesh point
+		 ,* IBSS
+		 ,* managed
+		 ,* AP
+		 ,* AP/VLAN
+		 ,* monitor
+		 ,* mesh point
 	Band 1:
 		Capabilities: 0x2fe
 			HT20/HT40
@@ -108,33 +294,33 @@ Wiphy phy5
 		Minimum RX AMPDU time spacing: 2 usec (0x04)
 		HT TX/RX MCS rate indexes supported: 0-15, 32
 		Bitrates (non-HT):
-			* 1.0 Mbps
-			* 2.0 Mbps (short preamble supported)
-			* 5.5 Mbps (short preamble supported)
-			* 11.0 Mbps (short preamble supported)
-			* 6.0 Mbps
-			* 9.0 Mbps
-			* 12.0 Mbps
-			* 18.0 Mbps
-			* 24.0 Mbps
-			* 36.0 Mbps
-			* 48.0 Mbps
-			* 54.0 Mbps
+			,* 1.0 Mbps
+			,* 2.0 Mbps (short preamble supported)
+			,* 5.5 Mbps (short preamble supported)
+			,* 11.0 Mbps (short preamble supported)
+			,* 6.0 Mbps
+			,* 9.0 Mbps
+			,* 12.0 Mbps
+			,* 18.0 Mbps
+			,* 24.0 Mbps
+			,* 36.0 Mbps
+			,* 48.0 Mbps
+			,* 54.0 Mbps
 		Frequencies:
-			* 2412 MHz [1] (20.0 dBm)
-			* 2417 MHz [2] (20.0 dBm)
-			* 2422 MHz [3] (20.0 dBm)
-			* 2427 MHz [4] (20.0 dBm)
-			* 2432 MHz [5] (20.0 dBm)
-			* 2437 MHz [6] (20.0 dBm)
-			* 2442 MHz [7] (20.0 dBm)
-			* 2447 MHz [8] (20.0 dBm)
-			* 2452 MHz [9] (20.0 dBm)
-			* 2457 MHz [10] (20.0 dBm)
-			* 2462 MHz [11] (20.0 dBm)
-			* 2467 MHz [12] (20.0 dBm) (no IR)
-			* 2472 MHz [13] (20.0 dBm) (no IR)
-			* 2484 MHz [14] (20.0 dBm) (no IR)
+			,* 2412 MHz [1] (30.0 dBm)
+			,* 2417 MHz [2] (30.0 dBm)
+			,* 2422 MHz [3] (30.0 dBm)
+			,* 2427 MHz [4] (30.0 dBm)
+			,* 2432 MHz [5] (30.0 dBm)
+			,* 2437 MHz [6] (30.0 dBm)
+			,* 2442 MHz [7] (30.0 dBm)
+			,* 2447 MHz [8] (30.0 dBm)
+			,* 2452 MHz [9] (30.0 dBm)
+			,* 2457 MHz [10] (30.0 dBm)
+			,* 2462 MHz [11] (30.0 dBm)
+			,* 2467 MHz [12] (disabled)
+			,* 2472 MHz [13] (disabled)
+			,* 2484 MHz [14] (disabled)
 	Band 2:
 		Capabilities: 0x2fe
 			HT20/HT40
@@ -150,124 +336,124 @@ Wiphy phy5
 		Minimum RX AMPDU time spacing: 2 usec (0x04)
 		HT TX/RX MCS rate indexes supported: 0-15, 32
 		Bitrates (non-HT):
-			* 6.0 Mbps
-			* 9.0 Mbps
-			* 12.0 Mbps
-			* 18.0 Mbps
-			* 24.0 Mbps
-			* 36.0 Mbps
-			* 48.0 Mbps
-			* 54.0 Mbps
+			,* 6.0 Mbps
+			,* 9.0 Mbps
+			,* 12.0 Mbps
+			,* 18.0 Mbps
+			,* 24.0 Mbps
+			,* 36.0 Mbps
+			,* 48.0 Mbps
+			,* 54.0 Mbps
 		Frequencies:
-			* 5180 MHz [36] (20.0 dBm) (no IR)
-			* 5190 MHz [38] (20.0 dBm) (no IR)
-			* 5200 MHz [40] (20.0 dBm)
-			* 5210 MHz [42] (20.0 dBm) (no IR)
-			* 5220 MHz [44] (20.0 dBm)
-			* 5230 MHz [46] (20.0 dBm) (no IR)
-			* 5240 MHz [48] (20.0 dBm) (no IR)
-			* 5250 MHz [50] (disabled)
-			* 5260 MHz [52] (20.0 dBm) (no IR, radar detection)
-			* 5270 MHz [54] (20.0 dBm) (no IR, radar detection)
-			* 5280 MHz [56] (20.0 dBm) (no IR, radar detection)
-			* 5290 MHz [58] (20.0 dBm) (no IR, radar detection)
-			* 5300 MHz [60] (20.0 dBm) (no IR, radar detection)
-			* 5310 MHz [62] (20.0 dBm) (no IR, radar detection)
-			* 5320 MHz [64] (20.0 dBm) (no IR, radar detection)
-			* 5500 MHz [100] (20.0 dBm) (no IR, radar detection)
-			* 5510 MHz [102] (20.0 dBm) (no IR, radar detection)
-			* 5520 MHz [104] (20.0 dBm) (no IR, radar detection)
-			* 5530 MHz [106] (20.0 dBm) (no IR, radar detection)
-			* 5540 MHz [108] (20.0 dBm) (no IR, radar detection)
-			* 5550 MHz [110] (20.0 dBm) (no IR, radar detection)
-			* 5560 MHz [112] (20.0 dBm) (no IR, radar detection)
-			* 5570 MHz [114] (20.0 dBm) (no IR, radar detection)
-			* 5580 MHz [116] (20.0 dBm) (no IR, radar detection)
-			* 5590 MHz [118] (20.0 dBm) (no IR, radar detection)
-			* 5600 MHz [120] (20.0 dBm) (no IR, radar detection)
-			* 5610 MHz [122] (20.0 dBm) (no IR, radar detection)
-			* 5620 MHz [124] (20.0 dBm) (no IR, radar detection)
-			* 5630 MHz [126] (20.0 dBm) (no IR, radar detection)
-			* 5640 MHz [128] (20.0 dBm) (no IR, radar detection)
-			* 5650 MHz [130] (20.0 dBm) (no IR, radar detection)
-			* 5660 MHz [132] (20.0 dBm) (no IR, radar detection)
-			* 5670 MHz [134] (20.0 dBm) (no IR, radar detection)
-			* 5680 MHz [136] (20.0 dBm) (no IR, radar detection)
-			* 5690 MHz [138] (20.0 dBm) (no IR, radar detection)
-			* 5700 MHz [140] (20.0 dBm) (no IR, radar detection)
-			* 5745 MHz [149] (20.0 dBm) (no IR)
-			* 5755 MHz [151] (20.0 dBm) (no IR)
-			* 5765 MHz [153] (20.0 dBm) (no IR)
-			* 5775 MHz [155] (20.0 dBm) (no IR)
-			* 5785 MHz [157] (20.0 dBm) (no IR)
-			* 5795 MHz [159] (20.0 dBm) (no IR)
-			* 5805 MHz [161] (20.0 dBm)
-			* 5825 MHz [165] (20.0 dBm) (no IR)
-			* 4920 MHz [184] (disabled)
-			* 4940 MHz [188] (disabled)
-			* 4960 MHz [192] (disabled)
-			* 4980 MHz [196] (disabled)
+			,* 5180 MHz [36] (23.0 dBm)
+			,* 5190 MHz [38] (23.0 dBm)
+			,* 5200 MHz [40] (23.0 dBm)
+			,* 5210 MHz [42] (23.0 dBm)
+			,* 5220 MHz [44] (23.0 dBm)
+			,* 5230 MHz [46] (23.0 dBm)
+			,* 5240 MHz [48] (23.0 dBm)
+			,* 5250 MHz [50] (disabled)
+			,* 5260 MHz [52] (23.0 dBm) (radar detection)
+			,* 5270 MHz [54] (23.0 dBm) (radar detection)
+			,* 5280 MHz [56] (23.0 dBm) (radar detection)
+			,* 5290 MHz [58] (23.0 dBm) (radar detection)
+			,* 5300 MHz [60] (23.0 dBm) (radar detection)
+			,* 5310 MHz [62] (23.0 dBm) (radar detection)
+			,* 5320 MHz [64] (23.0 dBm) (radar detection)
+			,* 5500 MHz [100] (23.0 dBm) (radar detection)
+			,* 5510 MHz [102] (23.0 dBm) (radar detection)
+			,* 5520 MHz [104] (23.0 dBm) (radar detection)
+			,* 5530 MHz [106] (23.0 dBm) (radar detection)
+			,* 5540 MHz [108] (23.0 dBm) (radar detection)
+			,* 5550 MHz [110] (23.0 dBm) (radar detection)
+			,* 5560 MHz [112] (23.0 dBm) (radar detection)
+			,* 5570 MHz [114] (23.0 dBm) (radar detection)
+			,* 5580 MHz [116] (23.0 dBm) (radar detection)
+			,* 5590 MHz [118] (23.0 dBm) (radar detection)
+			,* 5600 MHz [120] (23.0 dBm) (radar detection)
+			,* 5610 MHz [122] (23.0 dBm) (radar detection)
+			,* 5620 MHz [124] (23.0 dBm) (radar detection)
+			,* 5630 MHz [126] (23.0 dBm) (radar detection)
+			,* 5640 MHz [128] (23.0 dBm) (radar detection)
+			,* 5650 MHz [130] (23.0 dBm) (radar detection)
+			,* 5660 MHz [132] (23.0 dBm) (radar detection)
+			,* 5670 MHz [134] (23.0 dBm) (radar detection)
+			,* 5680 MHz [136] (23.0 dBm) (radar detection)
+			,* 5690 MHz [138] (23.0 dBm) (radar detection)
+			,* 5700 MHz [140] (23.0 dBm) (radar detection)
+			,* 5745 MHz [149] (30.0 dBm)
+			,* 5755 MHz [151] (30.0 dBm)
+			,* 5765 MHz [153] (30.0 dBm)
+			,* 5775 MHz [155] (30.0 dBm)
+			,* 5785 MHz [157] (30.0 dBm)
+			,* 5795 MHz [159] (30.0 dBm)
+			,* 5805 MHz [161] (30.0 dBm)
+			,* 5825 MHz [165] (30.0 dBm)
+			,* 4920 MHz [184] (disabled)
+			,* 4940 MHz [188] (disabled)
+			,* 4960 MHz [192] (disabled)
+			,* 4980 MHz [196] (disabled)
 	Supported commands:
-		 * new_interface
-		 * set_interface
-		 * new_key
-		 * start_ap
-		 * new_station
-		 * new_mpath
-		 * set_mesh_config
-		 * set_bss
-		 * authenticate
-		 * associate
-		 * deauthenticate
-		 * disassociate
-		 * join_ibss
-		 * join_mesh
-		 * set_tx_bitrate_mask
-		 * frame
-		 * frame_wait_cancel
-		 * set_wiphy_netns
-		 * set_channel
-		 * set_wds_peer
-		 * probe_client
-		 * set_noack_map
-		 * register_beacons
-		 * start_p2p_device
-		 * set_mcast_rate
-		 * connect
-		 * disconnect
-		 * set_qos_map
-		 * set_multicast_to_unicast
+		 ,* new_interface
+		 ,* set_interface
+		 ,* new_key
+		 ,* start_ap
+		 ,* new_station
+		 ,* new_mpath
+		 ,* set_mesh_config
+		 ,* set_bss
+		 ,* authenticate
+		 ,* associate
+		 ,* deauthenticate
+		 ,* disassociate
+		 ,* join_ibss
+		 ,* join_mesh
+		 ,* set_tx_bitrate_mask
+		 ,* frame
+		 ,* frame_wait_cancel
+		 ,* set_wiphy_netns
+		 ,* set_channel
+		 ,* set_wds_peer
+		 ,* probe_client
+		 ,* set_noack_map
+		 ,* register_beacons
+		 ,* start_p2p_device
+		 ,* set_mcast_rate
+		 ,* connect
+		 ,* disconnect
+		 ,* set_qos_map
+		 ,* set_multicast_to_unicast
 	Supported TX frame types:
-		 * IBSS: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * AP/VLAN: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * mesh point: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-device: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* IBSS: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* AP/VLAN: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* mesh point: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 ,* P2P-device: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
 	Supported RX frame types:
-		 * IBSS: 0x40 0xb0 0xc0 0xd0
-		 * managed: 0x40 0xd0
-		 * AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * AP/VLAN: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * mesh point: 0xb0 0xsc0 0xd0
-		 * P2P-client: 0x40 0xd0
-		 * P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * P2P-device: 0x40 0xd0
+		 ,* IBSS: 0x40 0xb0 0xc0 0xd0
+		 ,* managed: 0x40 0xd0
+		 ,* AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 ,* AP/VLAN: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 ,* mesh point: 0xb0 0xc0 0xd0
+		 ,* P2P-client: 0x40 0xd0
+		 ,* P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 ,* P2P-device: 0x40 0xd0
 	software interface modes (can always be added):
-		 * AP/VLAN
-		 * monitor
+		 ,* AP/VLAN
+		 ,* monitor
 	valid interface combinations:
-		 * #{ AP, mesh point } <= 8,
+		 ,* #{ AP, mesh point } <= 8,
 		   total <= 8, #channels <= 1
 	HT Capability overrides:
-		 * MCS: ff ff ff ff ff ff ff ff ff ff
-		 * maximum A-MSDU length
-		 * supported channel width
-		 * short GI for 40 MHz
-		 * max A-MPDU length exponent
-		 * min MPDU start spacing
+		 ,* MCS: ff ff ff ff ff ff ff ff ff ff
+		 ,* maximum A-MSDU length
+		 ,* supported channel width
+		 ,* short GI for 40 MHz
+		 ,* max A-MPDU length exponent
+		 ,* min MPDU start spacing
 	Device supports TX status socket option.
 	Device supports HT-IBSS.
 	Device supports SAE with AUTHENTICATE command
@@ -278,251 +464,11 @@ Wiphy phy5
 	Driver supports full state transitions for AP/GO clients
 	Driver supports a userspace MPM
 	Device supports configuring vdev MAC-addr on create.
-Wiphy phy0
-	max # scan SSIDs: 20
-	max scan IEs length: 425 bytes
-	max # sched scan SSIDs: 20
-	max # match sets: 11
-	max # scan plans: 2
-	max scan plan interval: 65535
-	max scan plan iterations: 254
-	Retry short limit: 7
-	Retry long limit: 4
-	Coverage class: 0 (up to 0m)
-	Device supports RSN-IBSS.
-	Device supports AP-side u-APSD.
-	Device supports T-DLS.
-	Supported Ciphers:
-		* WEP40 (00-0f-ac:1)
-		* WEP104 (00-0f-ac:5)
-		* TKIP (00-0f-ac:2)
-		* CCMP-128 (00-0f-ac:4)
-		* CMAC (00-0f-ac:6)
-	Available Antennas: TX 0 RX 0
-	Supported interface modes:
-		 * IBSS
-		 * managed
-		 * AP
-		 * AP/VLAN
-		 * monitor
-		 * P2P-client
-		 * P2P-GO
-		 * P2P-device
-	Band 1:
-		Capabilities: 0x11ef
-			RX LDPC
-			HT20/HT40
-			SM Power Save disabled
-			RX HT20 SGI
-			RX HT40 SGI
-			TX STBC
-			RX STBC 1-stream
-			Max AMSDU length: 3839 bytes
-			DSSS/CCK HT40
-		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
-		Minimum RX AMPDU time spacing: 4 usec (0x05)
-		HT Max RX data rate: 300 Mbps
-		HT TX/RX MCS rate indexes supported: 0-15
-		Bitrates (non-HT):
-			* 1.0 Mbps
-			* 2.0 Mbps (short preamble supported)
-			* 5.5 Mbps (short preamble supported)
-			* 11.0 Mbps (short preamble supported)
-			* 6.0 Mbps
-			* 9.0 Mbps
-			* 12.0 Mbps
-			* 18.0 Mbps
-			* 24.0 Mbps
-			* 36.0 Mbps
-			* 48.0 Mbps
-			* 54.0 Mbps
-		Frequencies:
-			* 2412 MHz [1] (22.0 dBm)
-			* 2417 MHz [2] (22.0 dBm)
-			* 2422 MHz [3] (22.0 dBm)
-			* 2427 MHz [4] (22.0 dBm)
-			* 2432 MHz [5] (22.0 dBm)
-			* 2437 MHz [6] (22.0 dBm)
-			* 2442 MHz [7] (22.0 dBm)
-			* 2447 MHz [8] (22.0 dBm)
-			* 2452 MHz [9] (22.0 dBm)
-			* 2457 MHz [10] (22.0 dBm)
-			* 2462 MHz [11] (22.0 dBm)
-			* 2467 MHz [12] (22.0 dBm)
-			* 2472 MHz [13] (22.0 dBm)
-			* 2484 MHz [14] (disabled)
-	Band 2:
-		Capabilities: 0x11ef
-			RX LDPC
-			HT20/HT40
-			SM Power Save disabled
-			RX HT20 SGI
-			RX HT40 SGI
-			TX STBC
-			RX STBC 1-stream
-			Max AMSDU length: 3839 bytes
-			DSSS/CCK HT40
-		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
-		Minimum RX AMPDU time spacing: 4 usec (0x05)
-		HT Max RX data rate: 300 Mbps
-		HT TX/RX MCS rate indexes supported: 0-15
-		VHT Capabilities (0x038071b0):
-			Max MPDU length: 3895
-			Supported Channel Width: neither 160 nor 80+80
-			RX LDPC
-			short GI (80 MHz)
-			TX STBC
-			SU Beamformee
-		VHT RX MCS set:
-			1 streams: MCS 0-9
-			2 streams: MCS 0-9
-			3 streams: not supported
-			4 streams: not supported
-			5 streams: not supported
-			6 streams: not supported
-			7 streams: not supported
-			8 streams: not supported
-		VHT RX highest supported: 0 Mbps
-		VHT TX MCS set:
-			1 streams: MCS 0-9
-			2 streams: MCS 0-9
-			3 streams: not supported
-			4 streams: not supported
-			5 streams: not supported
-			6 streams: not supported
-			7 streams: not supported
-			8 streams: not supported
-		VHT TX highest supported: 0 Mbps
-		Bitrates (non-HT):
-			* 6.0 Mbps
-			* 9.0 Mbps
-			* 12.0 Mbps
-			* 18.0 Mbps
-			* 24.0 Mbps
-			* 36.0 Mbps
-			* 48.0 Mbps
-			* 54.0 Mbps
-		Frequencies:
-			* 5180 MHz [36] (22.0 dBm) (no IR)
-			* 5200 MHz [40] (22.0 dBm) (no IR)
-			* 5220 MHz [44] (22.0 dBm) (no IR)
-			* 5240 MHz [48] (22.0 dBm) (no IR)
-			* 5260 MHz [52] (22.0 dBm) (no IR, radar detection)
-			* 5280 MHz [56] (22.0 dBm) (no IR, radar detection)
-			* 5300 MHz [60] (22.0 dBm) (no IR, radar detection)
-			* 5320 MHz [64] (22.0 dBm) (no IR, radar detection)
-			* 5500 MHz [100] (22.0 dBm) (no IR, radar detection)
-			* 5520 MHz [104] (22.0 dBm) (no IR, radar detection)
-			* 5540 MHz [108] (22.0 dBm) (no IR, radar detection)
-			* 5560 MHz [112] (22.0 dBm) (no IR, radar detection)
-			* 5580 MHz [116] (22.0 dBm) (no IR, radar detection)
-			* 5600 MHz [120] (22.0 dBm) (no IR, radar detection)
-			* 5620 MHz [124] (22.0 dBm) (no IR, radar detection)
-			* 5640 MHz [128] (22.0 dBm) (no IR, radar detection)
-			* 5660 MHz [132] (22.0 dBm) (no IR, radar detection)
-			* 5680 MHz [136] (22.0 dBm) (no IR, radar detection)
-			* 5700 MHz [140] (22.0 dBm) (no IR, radar detection)
-			* 5720 MHz [144] (22.0 dBm) (no IR, radar detection)
-			* 5745 MHz [149] (22.0 dBm) (no IR)
-			* 5765 MHz [153] (22.0 dBm) (no IR)
-			* 5785 MHz [157] (22.0 dBm) (no IR)
-			* 5805 MHz [161] (22.0 dBm) (no IR)
-			* 5825 MHz [165] (22.0 dBm) (no IR)
-	Supported commands:
-		 * new_interface
-		 * set_interface
-		 * new_key
-		 * start_ap
-		 * new_station
-		 * new_mpath
-		 * set_mesh_config
-		 * set_bss
-		 * authenticate
-		 * associate
-		 * deauthenticate
-		 * disassociate
-		 * join_ibss
-		 * join_mesh
-		 * remain_on_channel
-		 * set_tx_bitrate_mask
-		 * frame
-		 * frame_wait_cancel
-		 * set_wiphy_netns
-		 * set_channel
-		 * set_wds_peer
-		 * tdls_mgmt
-		 * tdls_oper
-		 * start_sched_scan
-		 * probe_client
-		 * set_noack_map
-		 * register_beacons
-		 * start_p2p_device
-		 * set_mcast_rate
-		 * connect
-		 * disconnect
-		 * channel_switch
-		 * set_qos_map
-		 * add_tx_ts
-		 * set_multicast_to_unicast
-	Supported TX frame types:
-		 * IBSS: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * AP/VLAN: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * mesh point: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-		 * P2P-device: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
-	Supported RX frame types:
-		 * IBSS: 0x40 0xb0 0xc0 0xd0
-		 * managed: 0x40 0xd0
-		 * AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * AP/VLAN: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * mesh point: 0xb0 0xc0 0xd0
-		 * P2P-client: 0x40 0xd0
-		 * P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
-		 * P2P-device: 0x40 0xd0
-	WoWLAN support:
-		 * wake up on disconnect
-		 * wake up on magic packet
-		 * wake up on pattern match, up to 20 patterns of 16-128 bytes,
-		   maximum packet offset 0 bytes
-		 * can do GTK rekeying
-		 * wake up on GTK rekey failure
-		 * wake up on EAP identity request
-		 * wake up on 4-way handshake
-		 * wake up on rfkill release
-		 * wake up on network detection, up to 11 match sets
-		 * wake up on TCP connection
-	software interface modes (can always be added):
-		 * AP/VLAN
-		 * monitor
-	valid interface combinations:
-		 * #{ managed } <= 1, #{ AP, P2P-client, P2P-GO } <= 1, #{ P2P-device } <= 1,
-		   total <= 3, #channels <= 2
-	HT Capability overrides:
-		 * MCS: ff ff ff ff ff ff ff ff ff ff
-		 * maximum A-MSDU length
-		 * supported channel width
-		 * short GI for 40 MHz
-		 * max A-MPDU length exponent
-		 * min MPDU start spacing
-	Device supports TX status socket option.
-	Device supports HT-IBSS.
-	Device supports SAE with AUTHENTICATE command
-	Device supports low priority scan.
-	Device supports scan flush.
-	Device supports per-vif TX power setting
-	P2P GO supports CT window setting
-	P2P GO supports opportunistic powersave setting
-	Driver supports full state transitions for AP/GO clients
-	Driver supports a userspace MPM
-	Driver/device bandwidth changes during BSS lifetime (AP/GO mode)
-	Device supports static SMPS
-	Device supports dynamic SMPS
-	Device supports WMM-AC admission (TSPECs)
-	Device supports configuring vdev MAC-addr on create.
-	Device supports TDLS channel switching
+	Supported extended features:
+		,* [ RRM ]: RRM
+		,* [ FILS_STA ]: STA FILS (Fast Initial Link Setup)
+		,* [ CQM_RSSI_LIST ]: multiple CQM_RSSI_THOLD records
+		,* [ CONTROL_PORT_OVER_NL80211 ]: control port over nl80211
 #+end_example
 
 #+BEGIN_SRC sh :results output  :dir /sudo::/root
@@ -1047,4 +993,160 @@ Wiphy phy0
 
 #+RESULTS:
 
+
+* Scanning
+
+#+BEGIN_SRC sh :dir "/ssh:root@192.168.1.2:/tmp/" :results output
+  exec 2>&1;
+  iw  dev wlan0 scan  2>&1 | tee /tmp/mf
+#+END_SRC
+
+#+RESULTS:
+: command failed: Operation not supported (-95)
    
+
+#+BEGIN_SRC sh :dir "/ssh:root@192.168.1.2:/tmp/" :results output
+  exec 2>&1;
+  #iw  dev wlan1 scan  2>&1 | tee /tmp/mf
+  iw commands  2>&1 | tee /tmp/mf
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+1 (0x1): get_wiphy
+2 (0x2): set_wiphy
+3 (0x3): new_wiphy
+4 (0x4): del_wiphy
+5 (0x5): get_interface
+6 (0x6): set_interface
+7 (0x7): new_interface
+8 (0x8): del_interface
+9 (0x9): get_key
+10 (0xa): set_key
+11 (0xb): new_key
+12 (0xc): del_key
+13 (0xd): get_beacon
+14 (0xe): set_beacon
+15 (0xf): start_ap
+16 (0x10): stop_ap
+17 (0x11): get_station
+18 (0x12): set_station
+19 (0x13): new_station
+20 (0x14): del_station
+21 (0x15): get_mpath
+22 (0x16): set_mpath
+23 (0x17): new_mpath
+24 (0x18): del_mpath
+25 (0x19): set_bss
+26 (0x1a): set_reg
+27 (0x1b): req_set_reg
+28 (0x1c): get_mesh_config
+29 (0x1d): set_mesh_config
+30 (0x1e): Unknown command (30)
+31 (0x1f): get_reg
+32 (0x20): get_scan
+33 (0x21): trigger_scan
+34 (0x22): new_scan_results
+35 (0x23): scan_aborted
+36 (0x24): reg_change
+37 (0x25): authenticate
+38 (0x26): associate
+39 (0x27): deauthenticate
+40 (0x28): disassociate
+41 (0x29): michael_mic_failure
+42 (0x2a): reg_beacon_hint
+43 (0x2b): join_ibss
+44 (0x2c): leave_ibss
+45 (0x2d): testmode
+46 (0x2e): connect
+47 (0x2f): roam
+48 (0x30): disconnect
+49 (0x31): set_wiphy_netns
+50 (0x32): get_survey
+51 (0x33): new_survey_results
+52 (0x34): set_pmksa
+53 (0x35): del_pmksa
+54 (0x36): flush_pmksa
+55 (0x37): remain_on_channel
+56 (0x38): cancel_remain_on_channel
+57 (0x39): set_tx_bitrate_mask
+58 (0x3a): register_frame
+59 (0x3b): frame
+60 (0x3c): frame_tx_status
+61 (0x3d): set_power_save
+62 (0x3e): get_power_save
+63 (0x3f): set_cqm
+64 (0x40): notify_cqm
+65 (0x41): set_channel
+66 (0x42): set_wds_peer
+67 (0x43): frame_wait_cancel
+68 (0x44): join_mesh
+69 (0x45): leave_mesh
+70 (0x46): unprot_deauthenticate
+71 (0x47): unprot_disassociate
+72 (0x48): new_peer_candidate
+73 (0x49): get_wowlan
+74 (0x4a): set_wowlan
+75 (0x4b): start_sched_scan
+76 (0x4c): stop_sched_scan
+77 (0x4d): sched_scan_results
+78 (0x4e): sched_scan_stopped
+79 (0x4f): set_rekey_offload
+80 (0x50): pmksa_candidate
+81 (0x51): tdls_oper
+82 (0x52): tdls_mgmt
+83 (0x53): unexpected_frame
+84 (0x54): probe_client
+85 (0x55): register_beacons
+86 (0x56): unexpected_4addr_frame
+87 (0x57): set_noack_map
+88 (0x58): ch_switch_notify
+89 (0x59): start_p2p_device
+90 (0x5a): stop_p2p_device
+91 (0x5b): conn_failed
+92 (0x5c): set_mcast_rate
+93 (0x5d): set_mac_acl
+94 (0x5e): radar_detect
+95 (0x5f): get_protocol_features
+96 (0x60): update_ft_ies
+97 (0x61): ft_event
+98 (0x62): crit_protocol_start
+99 (0x63): crit_protocol_stop
+100 (0x64): get_coalesce
+101 (0x65): set_coalesce
+102 (0x66): channel_switch
+103 (0x67): vendor
+104 (0x68): set_qos_map
+105 (0x69): add_tx_ts
+106 (0x6a): del_tx_ts
+107 (0x6b): get_mpp
+108 (0x6c): join_ocb
+109 (0x6d): leave_ocb
+110 (0x6e): ch_switch_started_notify
+111 (0x6f): tdls_channel_switch
+112 (0x70): tdls_cancel_channel_switch
+113 (0x71): wiphy_reg_change
+114 (0x72): abort_scan
+115 (0x73): start_nan
+116 (0x74): stop_nan
+117 (0x75): add_nan_function
+118 (0x76): del_nan_function
+119 (0x77): change_nan_config
+120 (0x78): nan_match
+121 (0x79): set_multicast_to_unicast
+122 (0x7a): update_connect_params
+123 (0x7b): set_pmk
+124 (0x7c): del_pmk
+125 (0x7d): port_authorized
+126 (0x7e): reload_regdb
+127 (0x7f): external_auth
+128 (0x80): sta_opmode_changed
+129 (0x81): control_port_frame
+130 (0x82): get_ftm_responder_stats
+131 (0x83): peer_measurement_start
+132 (0x84): peer_measurement_result
+133 (0x85): peer_measurement_complete
+134 (0x86): notify_radar
+135 (0x87): update_owe_info
+136 (0x88): probe_mesh_link
+#+end_example

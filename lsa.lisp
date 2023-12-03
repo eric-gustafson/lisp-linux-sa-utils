@@ -63,10 +63,10 @@
       )))
 
 (defun machine-info()
-  (pm:match
+  (match
       (machine-info-model)
     ((and (type string)
-	  (pm.ppcre:ppcre "^Model[^:]+:\\s+(.*)" x))
+	  (ppcre "^Model[^:]+:\\s+(.*)" x))
      x)
     )
   )
@@ -133,7 +133,7 @@ this function returns two values: (usb-bus-number usb-device-number)
     (loop :for p :in (cdr start) :while (not (equal p "net")) :collect p))
   )
 
-(pm:defun-match /sys-dev-sig (sig)
+(defun-match /sys-dev-sig (sig)
   ((list* (equalp "platform") type _)
    (a:format-symbol :keyword "~:@(~a~)" type))
   (otherwise
@@ -153,7 +153,7 @@ this function returns two values: (usb-bus-number usb-device-number)
 - dev-type: soc, scb.  I think this means onboard or USB bus.  
 - dev-index:  The minor number."
   (labels ((key-info (wobj)
-	     (pm:match wobj
+	     (match wobj
 	       ((list net-pathname absolute-path-list details-plist)
 		`(
 		  :iface ,(car (last (pathname-directory net-pathname)))
@@ -176,7 +176,7 @@ this function returns two values: (usb-bus-number usb-device-number)
 
 (defun soc-mac ()
   "Returns the mac-address of the onboard wireless adapter"
-  (pm:match
+  (match
       (soc-key-info)
     ((cons first _)
      (getf  first :mac)))
@@ -394,19 +394,22 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
    )
   )
 
+(defmacro run-fcmd (fmt &rest args)
+  `(uiop:run-program (format nil ,fmt ,@args) :ignore-error-status t :output :string :error-output :string))
+
 (defun add-vlan (pif ip cidr-block)
   (unless (and ip cidr-block)
     (error "add-vlan - must supply ip and cidr-block"))
   (handler-case
       (progn
 	(incf *vlan-id*)
-	(uiop-shell:run/s "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*)
+	(run-fcmd "/sbin/ip link add link ~a name ~a.~a type vlan id ~a" pif pif *vlan-id*  *vlan-id*)
 	(loop 
 	   :for i from 1 upto 10 
-	   :for (str _ xit-code) = (multiple-value-list (uiop-shell:run/s "/sbin/ip link show ~a.~a" pif *vlan-id*))
+	   :for (str _ xit-code) = (multiple-value-list (run-fcmd "/sbin/ip link show ~a.~a" pif *vlan-id*))
 	   :until (eq xit-code 0)
 	   :do (print i))
-	(uiop-shell:run/s "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*)
+	(run-fcmd "/sbin/ip address add ~a/~a brd + dev ~a.~a" (numex:->dotted ip) cidr-block pif *vlan-id*)
 	*vlan-id*
 	)
     (t (c)
@@ -416,20 +419,20 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   )
 
 (defun up-vlan (id)
-  (uiop-shell:run/s "/sbin/ip link set dev wlan.~a up" *vland-id*)
+  (run-fcmd "/sbin/ip link set dev wlan.~a up" *vland-id*)
   )
   
 (defun del-vlan (id)
-  (uiop-shell:run/s "/sbin/ip link set dev wlan0.~a down" id)
-  (uiop-shell:run/s "/sbin/ip link delete wlan0.~a" id)
+  (run-fcmd "/sbin/ip link set dev wlan0.~a down" id)
+  (run-fcmd "/sbin/ip link delete wlan0.~a" id)
   )
 
 (defun del-addr (pif ip cidr-block)
-  (uiop-shell:run/s "/sbin/ip address del ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
+  (run-fcmd "/sbin/ip address del ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
   )
 
 (defun add-addr (pif ip cidr-block)
-  (uiop-shell:run/s "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
+  (run-fcmd "/sbin/ip address add ~a/~a brd + dev ~a" (numex:->dotted ip) cidr-block pif)
   )
 
 
@@ -461,12 +464,12 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
   #+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -s ~a/~a -d ~a/~a -j DROP"  (numex:->dotted neta) cidrb (numex:->dotted netb) cidrb))
   #+nil(inferior-shell:run (format nil "/usr/sbin/iptables -I FORWARD -d ~a/~a -s ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb))
   ;; Drop all traffic to this device by default.
-  (uiop-shell:run/s "/usr/sbin/iptables -I FORWARD -d ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb)
+  (run-fcmd "/usr/sbin/iptables -I FORWARD -d ~a/~a -j DROP"  (numex:->dotted netb) cidrb (numex:->dotted neta) cidrb)
   )
 
 (defun ip-link ()
   (multiple-value-bind (out err xit-status)
-      (uiop-shell:run/s "/sbin/ip link")
+      (run-fcmd "/sbin/ip link")
     (declare (ignore err xit-status))
     (common-splitter out))
   )
@@ -641,7 +644,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 (defun iwconfig-interface-list ()
   (let ((results '()))
     (multiple-value-bind (out err xit-code)
-	(uiop-shell:run/s "iwconfig")
+	(run-fcmd "iwconfig")
       (declare (ignore err xit-code))
       (loop :for line :in (ppcre:split "(\\n|\\r)" out)
 	    :do
@@ -653,7 +656,7 @@ link'.  Returns a ((lo ...) (eth0 ...)) wher everything is a string."
 
 
 (defmethod add-route ( (target ip-addr) (via ip-addr) )
-  (uiop-shell:run/s "ip route add ~a via ~a dev eth0" target ip-addr)
+  (run-fcmd "ip route add ~a via ~a dev eth0" target ip-addr)
   )
 
 

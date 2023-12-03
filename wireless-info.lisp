@@ -11,7 +11,7 @@
   (unless
       *wifi-info-buffer*
     (multiple-value-bind (out err xit-code)
-	(uiop-shell:run/s "iw list")
+	(run-fcmd "iw list")
       (declare (ignorable err xit-code))      
       (setf *wifi-info-buffer* out)))
   *wifi-info-buffer*
@@ -20,7 +20,7 @@
 (fare-memoization:define-memo-function iw-dev-raw ()
   "return the results of 'iw dev' as a single string"
   (multiple-value-bind (out err xit-code)
-      (uiop-shell:run/s "iw dev")
+      (run-fcmd "iw dev")
     (declare (ignorable err xit-code))
     out)
   )
@@ -118,25 +118,25 @@ list and append it to the queue at what is the new top of the stack"
   )
 
 (defun tree-walker (tree)
-  (optima:match
+  (match
       tree
     (() '())
     ;; capabilities
     ((cons (and (type string)
-		(optima.ppcre:ppcre #?"Capabilities:\\s+0x([0-9a-fA-F]+)" n)) rest)
+		(ppcre #?"Capabilities:\\s+0x([0-9a-fA-F]+)" n)) rest)
      (let ((num (parse-integer n :radix 16)))
        (cons :capabilities (cons num (tree-walker rest)))))
     ((cons (and (type string)
-		(optima.ppcre:ppcre #?"Band (\\d+)" n)) rest)
+		(ppcre #?"Band (\\d+)" n)) rest)
      (cons :band (cons (parse-integer n) (tree-walker rest))))
     ;; physical dev
     ((cons (and (type string)
-		(optima.ppcre:ppcre "Wiphy phy(\\d+).*" n)) rest)
+		(ppcre "Wiphy phy(\\d+).*" n)) rest)
      (let ((num (parse-integer n)))
        (cons (list :phy num) (tree-walker rest))))
     ;; mode
     ((cons (and (type string)
-		(optima.ppcre:ppcre "Supported interface modes:")
+		(ppcre "Supported interface modes:")
 		) rest)
      (cons :modes (tree-walker rest)))
     ((type string)
@@ -147,16 +147,16 @@ list and append it to the queue at what is the new top of the stack"
   )
 
 (defun iw-dev-tree-walker (tree)
-  (optima:match
+  (match
       tree
     (() '())
     ((cons (and (type string)
-		(optima.ppcre:ppcre "phy#(\\d+)" n))
+		(ppcre "phy#(\\d+)" n))
 	   rest)
      (let ((num (parse-integer n)))
        (cons :phy (cons num (iw-dev-tree-walker rest)))))
     ((cons (and (type string)
-		(optima.ppcre:ppcre "Interface (\\w+)" iface))
+		(ppcre "Interface (\\w+)" iface))
 	   rest)
      (cons :iface (cons iface (iw-dev-tree-walker rest))))
     ((type string)
@@ -226,9 +226,9 @@ device-ids of the system (linux)"
   "Returns a list of integers for each of the physical-wireless interfaces"
   (serapeum:with-collector (g)
     (loop :for l :in (ppcre:split "(\\n|\\r)" txt) :do
-	 (pm:match
+	 (match
 	     l
-	   ((pm.ppcre:ppcre "^phy#(\\d+).*" n)
+	   ((ppcre "^phy#(\\d+).*" n)
 	    (g (parse-integer n))))
 	  ))
   )
@@ -243,7 +243,7 @@ device-ids of the system (linux)"
 (defun phy-supports-monitor? (n)
   (let ((tree (get-dev nil :key n)))
     (loop :for n :on tree :do
-	 (optima:match
+	 (match
 	     n
 	   ((list* :modes  (and (type list)
 				mlst) _)
@@ -256,7 +256,7 @@ device-ids of the system (linux)"
   ;; :band num subtree
   (serapeum:collecting
     (loop :for p :on dev-tree :do
-	 (optima:match
+	 (match
 	     p
 	   ((list* :band (and (type number)
 			      num)
@@ -269,7 +269,7 @@ device-ids of the system (linux)"
 
 (defun extract-capabilities-from-band-info (band-info)
   (loop :for p :on band-info :do
-       (optima:match
+       (match
 	   p
 	 ((list* :capabilities
 		 (type number)
@@ -296,7 +296,7 @@ device-ids of the system (linux)"
 OS's physical id number for the interface's name(ifname)."
   (let ((iw-dev-tree (iw-dev-tree)))
     (labels ((dev-search (node phy-num)
-	       (optima:match
+	       (match
 		   node
 		 ((list* :phy (and (type number)
 				   num) rest)
@@ -346,7 +346,7 @@ brute-force each of the wireless phy interfaces."
     (loop :for n :in (phys-iota) :do
 	 (when (phy-supports-monitor? n)
 	   (let ((cmd (setup-monitor-command n)))
-	     (uiop-shell:run/s cmd)
+	     (run-fcmd cmd)
 	     )
 	   )
 	 )
@@ -481,7 +481,7 @@ Return values:
 	(phy-n nil)
 	(dev-table (make-hash-table)))
     (labels ((tree-walker (node)
-	       (optima:match
+	       (match
 		   node
 		 ((list :phy (and (type number) n))
 		  (setf phy-n n))
@@ -518,7 +518,7 @@ Return values:
 	(phy-n nil)
 	(dev-table (make-hash-table)))
     (labels ((tree-walker (node)
-	       (optima:match
+	       (match
 		   node
 		 ((list :phy (and (type number) n))
 		  (setf phy-n n))

@@ -3,20 +3,16 @@
 (defpackage #:lsa
   (:shadowing-import-from #:trivia @)
   
-  (:use #:cl #:cl-interpol)
+  (:use #:cl #:cl-interpol :trivia :trivia.ppcre)
 
   (:nicknames :wifi)   ;; should move to it's own package
 
   (:local-nicknames 
    (:al  :alexandria)
    (:a :alexandria)
-   (:pm :trivia)
-   ;;(:pm.extra :trivia.extra)
-   (:pm.ppcre :trivia.ppcre)
-   (:re :ppcre)
-   (:pm.re :optima.ppcre)
    (:s :serapeum)
    (:r :rutils)
+   (:i :iterate)
    )  
   
   (:export

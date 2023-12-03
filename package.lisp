@@ -11,6 +11,7 @@
    (:al  :alexandria)
    (:a :alexandria)
    (:s :serapeum)
+   (:sex :serapeum.exporting)
    (:r :rutils)
    (:i :iterate)
    )  

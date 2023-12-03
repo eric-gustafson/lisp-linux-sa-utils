@@ -51,11 +51,9 @@
 
    ;; link object
    :path
-
    
    :/sys->link-obj
 
-   :git-update-all
    
    )
   )

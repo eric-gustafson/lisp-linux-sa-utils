@@ -8,24 +8,22 @@
   :serial t
   :depends-on (
 	       #:alexandria
+	       #:cffi
 	       #:cl-interpol
-	       #:serapeum
 	       #:cl-ppcre
-	       #:uiop
+	       #:fare-memoization
+	       #:iolib
+	       #:iterate
 	       #:log4cl
+	       #:numex
+	       #:osicat
+	       #:rutils
+	       #:serapeum
+	       #:stringhere
 	       #:trivia
 	       #:trivia.ppcre
-	       #:optima
-	       #:optima.ppcre
-	       #:stringhere
-	       #:numex
-	       #:cffi
-	       #:iolib
-	       #:uiop-shell
-	       #:rutils
-	       #:fare-memoization
-	       #:osicat
 	       #:trivial-backtrace
+	       #:uiop
 	       )
   :components ((:file "package")
                (:file "lsa")

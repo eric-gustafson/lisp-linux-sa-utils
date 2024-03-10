@@ -3,14 +3,11 @@
 	    (:local-nicknames 
 	     (:al  :alexandria)
 	     (:a :alexandria)
-	     (:pm :optima)
-	     (:pme :optima.extra)
 	     (:re :ppcre)
-	     (:pm.re :optima.ppcre)
+	     (:i :iterate)
 	     (:s :serapeum)
 	     (:r :rutils)
 	     )	    
-	    (:use #:cl #:lsa
-		  #:serapeum)
+	    (:use #:cl #:lsa #:trivia)
 	    )
 	  
